@@ -1,0 +1,57 @@
+---
+title: "Random_walks"
+author: "Zan Kastelic"
+date: "6 3 2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Naj bo $X$ slučajna spremenljivka porazdeljena kot
+\[
+X_t \sim \begin{pmatrix}
+-1 & 1 \\
+1-p & p
+\end{pmatrix} 
+\]
+za $t=1,2, \ldots$, kjer je $p \in [0,1]$. Če je $p=\frac{1}{2}$, pravimo, 
+da je naključni sprehod simetričen. Naključni sprehod sledi kumulativni vsoti
+teh naključnih spremevljivk, kar lahko zapišemo kot 
+\[
+S_0=0 \quad S_t=\sum_{k=1}^tX_k.
+\]
+```{r, echo=FALSE}
+sprehod <- function(p, spodnja_meja, zgornja_meja) {
+    vektor_vrednosti <- c(0)
+    vsota <- 0
+    while (vsota > spodnja_meja & vsota < zgornja_meja) {
+        vsota <- vsota + ifelse(runif(1) < p, 1, -1)
+        vektor_vrednosti <- c(vektor_vrednosti, vsota)
+    }
+  vektor_vrednosti}
+```
+Poglejmo si najprej simetričen sprehod, torej $p=\frac{1}{2}$. 
+
+```{r, echo=FALSE}
+vektor_vrednosti <- c(0)
+vsota <- 0
+p = 0.50
+spodnja_meja <- -10
+zgornja_meja <- 10
+a <- sprehod(p,spodnja_meja,zgornja_meja)
+N <- 100
+set.seed(21)
+seznam <- replicate(N, sprehod(p, spodnja_meja, zgornja_meja))
+
+max_length <- max(sapply(seznam, length))
+# make plot
+plot(c(1, max_length), c(spodnja_meja, zgornja_meja), type = "n")
+for (i in 1:N) {
+    lines(1:length(seznam[[i]]), seznam[[i]])
+}
+abline(h = 0, lty = "dashed")
+abline(h = spodnja_meja, lwd = 2)
+abline(h = zgornja_meja, lwd = 2)
+```
