@@ -55,3 +55,13 @@ abline(h = 0, lty = "dashed")
 abline(h = spodnja_meja, lwd = 2)
 abline(h = zgornja_meja, lwd = 2)
 ```
+
+Iz verjetnosti vemo, da naključni sprehod spada med markovske procese. Naj bosta 
+$a,b > 0$. Naj bo $b$ zgornja meja, $-a$ pa spodnja meja. Potem velja: 
+\[
+P(\text{da prej zadanemo $b$ kot $-a$ })=\begin{cases}
+      \frac{a}{a+b} & \text{če je } p=\frac{1}{2}, \\
+      \frac{1-(\frac{q}{p})^a}{1-(\frac{q}{p})^{a+b}} & \text{če je } p \neq \frac{1}{2}.
+    \end{cases}       
+\]
+
