@@ -65,3 +65,17 @@ P(\text{da prej zadanemo $b$ kot $-a$ })=\begin{cases}
     \end{cases}       
 \]
 
+Naj bo $T = T_{-a} \wedge T_b$ čas ustavljanja, kjer sta $T_{-a}=inf\{t \geq 0 | S_t = -a \}$ oziroma $T_b=inf\{t \geq 0 | S_t = b \}$. Koliko korakov bomo naredili v povprečju, preden zadanemo $a$ oziroma $b$?S predavanj pri predmetih Verjetnost 2 in Finančna matematika vemo, da velja 
+\[
+E(T).
+\]
+
+Slučajni sprehod v $\mathbb{R}^3$
+
+
+Sprehod v kocki 
+
+
+
+
+

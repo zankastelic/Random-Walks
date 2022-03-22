@@ -1,3 +1,6 @@
+library(rgl)
+
+
 # za simetricen
 sim_sprehod <- function(p, spodnja_meja, zgornja_meja) {
   vektor_vrednosti <- c(0)
@@ -52,4 +55,19 @@ for (i in 1:N) {
 abline(h = 0, lty = "dashed")
 abline(h = spodnja_meja, lwd = 2)
 abline(h = zgornja_meja, lwd = 2)
+
+# povprecni_cas zadetka 
+povprecje <- function(seznam){
+  stevilo_poti <- length(seznam)
+  vsota <- 0
+  for (i in 1: stevilo_poti){
+    vsota = vsota + length(seznam[[i]])
+  }
+  e = vsota / stevilo_poti
+  e
+}
+
+# kocka
+
+
 
