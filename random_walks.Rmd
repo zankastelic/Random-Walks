@@ -73,7 +73,9 @@ E(T).
 Slučajni sprehod v $\mathbb{R}^3$
 
 
-Sprehod v kocki 
+Sprehod v kocki; narišimo najprej kocko: 
+
+
 
 
 
