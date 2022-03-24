@@ -71,7 +71,7 @@ povprecje <- function(seznam){
 }
 
 # slucajni sprehod v R^2
-sprehod_po_ploskvi_simetricen <- function(stevilo_sprehodov, stevilo_korakov,plot = TRUE){
+sprehod_po_ravnini_simetricen <- function(stevilo_sprehodov, stevilo_korakov,plot = TRUE){
   require(ggplot2)
   polozaj <- matrix(ncol = 2)
   polozaj
@@ -134,7 +134,7 @@ sprehod_po_ploskvi_simetricen <- function(stevilo_sprehodov, stevilo_korakov,plo
 }
 
 
-ploskev_sprehod <- sprehod_po_ploskvi_simetricen(4, 10000)
+ploskev_sprehod <- sprehod_po_ravnini_simetricen(4, 10000)
 
 require(animation)
 ani.options(interval = .25)
@@ -148,13 +148,13 @@ saveGIF(
   outdir = getwd()
 )
 
-ploskev_sprehod <- sprehod_po_ploskvi_simetricen(10, 1000)
+ploskev_sprehod <- sprehod_po_ravnini_simetricen(10, 1000)
 prvi_kvadrat <- ploskev_sprehod
-ploskev_sprehod <- sprehod_po_ploskvi_simetricen(10, 1000)
+ploskev_sprehod <- sprehod_po_ravnini_simetricen(10, 1000)
 drugi_kvadrat <- ploskev_sprehod
-ploskev_sprehod <- sprehod_po_ploskvi_simetricen(10, 1000)
+ploskev_sprehod <- sprehod_po_ravnini_simetricen(10, 1000)
 tretji_kvadrat <- ploskev_sprehod
-ploskev_sprehod <- sprehod_po_ploskvi_simetricen(10, 1000)
+ploskev_sprehod <- sprehod_po_ravnini_simetricen(10, 1000)
 cetrti_kvadrat <- ploskev_sprehod
 
 prvi_kvadrat <- cbind(prvi_kvadrat, group = factor("gr1"))
@@ -165,6 +165,82 @@ cetrti_kvadrat <- cbind(cetrti_kvadrat, group = factor("gr4"))
 stirka <- rbind(prvi_kvadrat, drugi_kvadrat, tretji_kvadrat, cetrti_kvadrat)
 
 ggplot(stirka, aes(x=x, y=y, col = pot)) + geom_path() +facet_wrap(facets = ~group, nrow = 2, ncol = 2)
+
+#sprehod v R^3 
+sprehod_v_prostoru_simetricen <- function(stevilo_sprehodov, stevilo_korakov,plot = TRUE){
+  require(ggplot2)
+  polozaj <- matrix(ncol = 3)
+  polozaj
+  for (x in 1:stevilo_sprehodov) {
+    x
+    i <- 1
+    sprehajalec <- matrix(c(0,0,0), nrow = stevilo_korakov+1, ncol = 3, byrow = T)
+    sprehajalec
+    while(i  <= stevilo_korakov){
+      # odlocmo se najprej, a gremo levo/desno/gor/dol
+      # 1 - levo 
+      # 2 - desno
+      # 3 - dol 
+      # 4 - gor
+      # 5 - nazaj
+      # 6 - naprej
+      smeri <- c(1,2,3,4,5,6)
+      kam <- sample(smeri, 1)
+      kam # pobriši
+      # ?e je 0 se spreminja x os:
+      sprehajalec[i+1,1] <- sprehajalec[i,1] #treba je nastavit na enga vnaprej 
+      sprehajalec[i+1,2] <- sprehajalec[i,2] #treba je nastavit na enga vnaprej
+      sprehajalec[i+1,3] <- sprehajalec[i,3]
+      #sprehajalec[i,3] <- x
+      sprehajalec
+      if (kam == 1){
+        sprehajalec[i+1,1] <- sprehajalec[i,1] - 1
+        i = i + 1
+      } else if (kam == 2){
+        sprehajalec[i+1,1] <- sprehajalec[i,1] + 1
+        i = i + 1
+      } else if (kam == 3){
+        sprehajalec[i+1,2] <- sprehajalec[i,2] - 1
+        i = i + 1
+      } else if (kam == 4){
+        sprehajalec[i+1,2] <- sprehajalec[i,2] + 1
+        i = i + 1
+      } else if (kam == 5){
+        sprehajalec[i+1,3] <- sprehajalec[i,3] - 1
+        i = i + 1
+      } else if (kam == 6){
+        sprehajalec[i+1,3] <- sprehajalec[i,3] + 1
+        i = i + 1
+      }
+    }
+    sprehajalec
+    polozaj <- rbind(polozaj, sprehajalec)
+    #polozaj[length(polozaj)/3,3] <- x
+    polozaj
+    x = x + 1
+    x
+  }
+  v <- c(0)
+  for (x in 1:stevilo_sprehodov){
+    v <- c(v,rep(x,stevilo_korakov+1))
+  }
+  v <- v[2:length(v)]
+  colnames(polozaj) <- c("x" , "y", "z") # imena stolpcev 
+  polozaj <- as.data.frame(polozaj)
+  polozaj <- polozaj[2:nrow(polozaj),]
+  polozaj <- cbind(polozaj,pot = factor(v))
+  polozaj
+  if(plot){
+    require(ggplot2)
+    p <- ggplot(polozaj, aes(x = x, y = y, z=z,colour = pot))
+    p <- p + geom_path()
+    print(p)
+  }
+  return(polozaj)
+}
+
+
+
 
 # kocka
 
