@@ -3,26 +3,39 @@ library(scatterplot3d)
 library(ggplot2)
 library(threed)
 library(animation)
+library(plotly)
+library(htmlwidgets)
 
 # za simetricen
-sim_sprehod <- function(p, spodnja_meja, zgornja_meja) {
+sim_sprehod <- function(p, spodnja_meja, zgornja_meja){
   vektor_vrednosti <- c(0)
   vsota <- 0
-  while (vsota > spodnja_meja & vsota < zgornja_meja) {
+  v_levo <- 0 
+  v_desno <- 0
+  while (vsota > spodnja_meja & vsota < zgornja_meja){
     c <- c(-1,1)
-    vsota <- vsota + sample(c, 1)
+    a <- sample(c, 1)
+    vsota <- vsota + a
     vektor_vrednosti <- c(vektor_vrednosti, vsota)
+    if (a == -1){
+      v_levo <- v_levo +1 
+    } else {
+      v_desno <- v_desno +1
+    }
   }
-  vektor_vrednosti}
+  vrednosti <- list(vektor_vrednosti, v_levo, v_desno)
+  return(vrednosti)
+}
 
-nesim_sprehod <- function(p, spodnja_meja, zgornja_meja) {
+nesim_sprehod <- function(p, spodnja_meja, zgornja_meja){
   vektor_vrednosti <- c(0)
   vsota <- 0
-  while (vsota > spodnja_meja & vsota < zgornja_meja) {
+  while (vsota > spodnja_meja & vsota < zgornja_meja){
     vsota <- vsota + ifelse(runif(1) < p, 1, -1)
     vektor_vrednosti <- c(vektor_vrednosti, vsota)
   }
-  vektor_vrednosti}
+  return(vektor_vrednosti)
+}
 
 ######### za barve #######################
 colorPicker <- function(vsota, max_length,
@@ -63,13 +76,13 @@ abline(h = zgornja_meja, lwd = 2)
 povprecje <- function(seznam){
   stevilo_poti <- length(seznam)
   vsota <- 0
-  for (i in 1: stevilo_poti){
-    vsota = vsota + length(seznam[[i]])
+  for (i in seq(1, stevilo_poti, 3)){
+    vsota = vsota + (length(seznam[[i]])-1)
   }
-  e = vsota / stevilo_poti
-  e
+  e = vsota / length(seq(1, stevilo_poti, 3))
+  return(e)
 }
-
+st_korakov <- povprecje(seznam)
 # slucajni sprehod v R^2
 sprehod_po_ravnini_simetricen <- function(stevilo_sprehodov, stevilo_korakov,plot = TRUE){
   require(ggplot2)
@@ -124,15 +137,12 @@ sprehod_po_ravnini_simetricen <- function(stevilo_sprehodov, stevilo_korakov,plo
   polozaj <- as.data.frame(polozaj)
   polozaj <- polozaj[2:nrow(polozaj),]
   polozaj <- cbind(polozaj,pot = factor(v))
-  if(plot){
-    require(ggplot2)
-    p <- ggplot(polozaj, aes(x = x, y = y, colour = pot))
-    p <- p + geom_path()
-    print(p)
-  }
   return(polozaj)
 }
-
+sprehod_v_ravnini <- sprehod_po_ravnini_simetricen(1, 100)
+p <- ggplot(sprehod_v_ravnini, aes(x = x, y = y, colour = pot))
+p <- p + geom_path()
+p
 
 ravnina_sprehod <- sprehod_po_ravnini_simetricen(4, 10000)
 
@@ -167,78 +177,72 @@ stirka <- rbind(prvi_kvadrat, drugi_kvadrat, tretji_kvadrat, cetrti_kvadrat)
 ggplot(stirka, aes(x=x, y=y, col = pot)) + geom_path() +facet_wrap(facets = ~group, nrow = 2, ncol = 2)
 
 #sprehod v R^3 
-sprehod_v_prostoru_simetricen <- function(stevilo_sprehodov, stevilo_korakov,plot = TRUE){
+sprehod_v_prostoru_simetricen <- function(stevilo_korakov,plot = TRUE){
   polozaj <- matrix(ncol = 3)
   polozaj
-  for (x in 1:stevilo_sprehodov) {
-    x
-    i <- 1
-    sprehajalec <- matrix(c(0,0,0), nrow = stevilo_korakov+1, ncol = 3, byrow = T)
+  i <- 1
+  sprehajalec <- matrix(c(0,0,0), nrow = stevilo_korakov+1, ncol = 3, byrow = T)
+  sprehajalec
+  while(i  <= stevilo_korakov){
+    # odlocmo se najprej, a gremo levo/desno/gor/dol
+    # 1 - levo 
+    # 2 - desno
+    # 3 - dol 
+    # 4 - gor
+    # 5 - nazaj
+    # 6 - naprej
+    smeri <- c(1,2,3,4,5,6)
+    kam <- sample(smeri, 1)
+    kam # pobriši
+    # ?e je 0 se spreminja x os:
+    sprehajalec[i+1,1] <- sprehajalec[i,1] #treba je nastavit na enga vnaprej 
+    sprehajalec[i+1,2] <- sprehajalec[i,2] #treba je nastavit na enga vnaprej
+    sprehajalec[i+1,3] <- sprehajalec[i,3]
+    #sprehajalec[i,3] <- x
     sprehajalec
-    while(i  <= stevilo_korakov){
-      # odlocmo se najprej, a gremo levo/desno/gor/dol
-      # 1 - levo 
-      # 2 - desno
-      # 3 - dol 
-      # 4 - gor
-      # 5 - nazaj
-      # 6 - naprej
-      smeri <- c(1,2,3,4,5,6)
-      kam <- sample(smeri, 1)
-      kam # pobriši
-      # ?e je 0 se spreminja x os:
-      sprehajalec[i+1,1] <- sprehajalec[i,1] #treba je nastavit na enga vnaprej 
-      sprehajalec[i+1,2] <- sprehajalec[i,2] #treba je nastavit na enga vnaprej
-      sprehajalec[i+1,3] <- sprehajalec[i,3]
-      #sprehajalec[i,3] <- x
-      sprehajalec
-      if (kam == 1){
-        sprehajalec[i+1,1] <- sprehajalec[i,1] - 1
-        i = i + 1
-      } else if (kam == 2){
-        sprehajalec[i+1,1] <- sprehajalec[i,1] + 1
-        i = i + 1
-      } else if (kam == 3){
-        sprehajalec[i+1,2] <- sprehajalec[i,2] - 1
-        i = i + 1
-      } else if (kam == 4){
-        sprehajalec[i+1,2] <- sprehajalec[i,2] + 1
-        i = i + 1
-      } else if (kam == 5){
-        sprehajalec[i+1,3] <- sprehajalec[i,3] - 1
-        i = i + 1
-      } else if (kam == 6){
-        sprehajalec[i+1,3] <- sprehajalec[i,3] + 1
-        i = i + 1
-      }
+    if (kam == 1){
+      sprehajalec[i+1,1] <- sprehajalec[i,1] - 1
+      i = i + 1
+    } else if (kam == 2){
+      sprehajalec[i+1,1] <- sprehajalec[i,1] + 1
+      i = i + 1
+    } else if (kam == 3){
+      sprehajalec[i+1,2] <- sprehajalec[i,2] - 1
+      i = i + 1
+    } else if (kam == 4){
+      sprehajalec[i+1,2] <- sprehajalec[i,2] + 1
+      i = i + 1
+    } else if (kam == 5){
+      sprehajalec[i+1,3] <- sprehajalec[i,3] - 1
+      i = i + 1
+    } else if (kam == 6){
+      sprehajalec[i+1,3] <- sprehajalec[i,3] + 1
+      i = i + 1
     }
-    sprehajalec
-    polozaj <- rbind(polozaj, sprehajalec)
-    #polozaj[length(polozaj)/3,3] <- x
-    polozaj
-    x = x + 1
-    x
   }
+  sprehajalec
+  polozaj <- rbind(polozaj, sprehajalec)
+  #polozaj[length(polozaj)/3,3] <- x
+  polozaj
   v <- c(0)
-  for (x in 1:stevilo_sprehodov){
-    v <- c(v,rep(x,stevilo_korakov+1))
-  }
+  v <- c(v,rep(1,stevilo_korakov+1))
   v <- v[2:length(v)]
   colnames(polozaj) <- c("x" , "y", "z") # imena stolpcev 
   polozaj <- as.data.frame(polozaj)
   polozaj <- polozaj[2:nrow(polozaj),]
   polozaj <- cbind(polozaj,pot = factor(v))
-  polozaj
-  if(plot){
-    p <- ggplot(polozaj, aes(x = x, y = y, z=z,colour = pot))
-    p <- p + geom_path()
-    print(p)
-  }
   return(polozaj)
 }
 
-prostor_sprehod <- sprehod_v_prostoru_simetricen(1, 10)
+prostor_sprehod <- sprehod_v_prostoru_simetricen(100)
+prostor_sprehod
 
+fig = plot_ly(prostor_sprehod, x = ~x, y = ~y, z = ~z, type = 'scatter3d', mode = 'lines+markers',
+              opacity = 2, line = list(width = 1, color = ~pot, colorscale = 'Viridis'),
+              marker = list(size = 2, color = ~pot, colorscale = 'Viridis'))
+
+fig
+saveWidget(fig, "sprehod_v_prostoru.html")
 
 # kocka
 
