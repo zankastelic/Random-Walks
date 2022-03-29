@@ -5,6 +5,7 @@ library(threed)
 library(animation)
 library(plotly)
 library(htmlwidgets)
+library(igraph)
 
 # za simetricen
 sim_sprehod <- function(p, spodnja_meja, zgornja_meja){
@@ -246,3 +247,93 @@ saveWidget(fig, "sprehod_v_prostoru.html")
 
 # kocka
 
+
+kocka <- graph(
+  c("A", "B","B", "A", 
+    "A", "D", "D", "A",
+    "A", "E", "E", "A",
+    "B", "F", "F", "B",
+    "B", "C", "C", "B",
+    "D", "C", "C", "D",
+    "D", "H", "H", "D",
+    "E", "F", "F", "E",
+    "E", "H", "H", "E",
+    "F", "G", "G", "F",
+    "C", "G", "G", "C",
+    "H", "G", "G", "H")
+)
+# začnemo v oglišču A
+
+kocka <- graph(
+  c(1, 2,2, 1, 
+    1, 4, 4, 1,
+    1, 5, 5, 1,
+    2, 6, 6, 2,
+    2, 3, 3, 2,
+    4, 3, 3, 4,
+    4, 8, 8, 4,
+    5, 6, 6, 5,
+    5, 8, 8, 5,
+    6, 7, 7, 6,
+    3, 7, 7, 3,
+    8, 7, 7, 8)
+)
+plot(kocka)
+
+
+#pričakovan čas vrnitve v začetno oglišče
+sprehod_v_kocki <- function(){
+  pot <- c(1)
+  sosed <- c(2,4,5)
+  kam <- sample(sosed, 1)
+  pot <- c(pot,kam)
+  pot
+  while (kam != 1) {
+    if (kam == 2){
+      sosedi <- c(1,3,6)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 3){
+      sosedi <- c(2,4,7)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 4){
+      sosedi <- c(1,3,8)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 5){
+      sosedi <- c(1,6,8)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 6){
+      sosedi <- c(2,5,7)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 7){
+      sosedi <- c(3,6,8)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else {
+      sosedi <- c(4,5,7)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    }
+  }
+  return(pot)
+}
+
+povpecen_cas_vrnitve <- function(st_simulacij){
+  vsota <- 0 
+  for (i in 1:st_simulacij){
+    vsota <- vsota + (length(sprehod_v_kocki())-1)
+  }
+  rezultat <- vsota / st_simulacij
+  return(rezultat)
+}
