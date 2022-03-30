@@ -11,20 +11,20 @@ library(igraph)
 sim_sprehod <- function(p, spodnja_meja, zgornja_meja){
   vektor_vrednosti <- c(0)
   vsota <- 0
-  v_levo <- 0 
-  v_desno <- 0
+  spodaj <- 0 
+  zgoraj <- 0
   while (vsota > spodnja_meja & vsota < zgornja_meja){
     c <- c(-1,1)
     a <- sample(c, 1)
     vsota <- vsota + a
     vektor_vrednosti <- c(vektor_vrednosti, vsota)
     if (a == -1){
-      v_levo <- v_levo +1 
+      spodaj <- spodaj + a
     } else {
-      v_desno <- v_desno +1
+      zgoraj <- zgoraj + a
     }
   }
-  vrednosti <- list(vektor_vrednosti, v_levo, v_desno)
+  vrednosti <- list(vektor_vrednosti, spodaj, zgoraj)
   return(vrednosti)
 }
 
@@ -37,6 +37,29 @@ nesim_sprehod <- function(p, spodnja_meja, zgornja_meja){
   }
   return(vektor_vrednosti)
 }
+
+## 1 sprehod ## 
+vektor_vrednosti <- c(0)
+vsota <- 0
+p = 0.50
+spodnja_meja <- -5
+zgornja_meja <- 5
+set.seed(15)
+seznam1 <- replicate(1, sim_sprehod(p, spodnja_meja, zgornja_meja))
+max_length <- max(sapply(seznam1, length))
+
+plot(c(1, max_length), c(spodnja_meja, zgornja_meja), type = "n",
+     main="Random walk", xlab="cas oz. stevilo korakov", ylab="vrednost")
+for (i in 1:1) {
+  lines(1:length(seznam1[[i]]), seznam1[[i]])
+}
+abline(h = 0, lty = "dashed")
+abline(h = spodnja_meja, lwd = 2)
+abline(h = zgornja_meja, lwd = 2)
+seznam1[[1]]
+## 1 sprehod ##
+
+
 
 ######### za barve #######################
 colorPicker <- function(vsota, max_length,
@@ -52,19 +75,20 @@ colorPicker <- function(vsota, max_length,
 }
 ######### za barve #######################
 
+
 vektor_vrednosti <- c(0)
 vsota <- 0
 p = 0.50
-spodnja_meja <- -50
-zgornja_meja <- 50
+spodnja_meja <- -25
+zgornja_meja <- 25
 a <- sim_sprehod(p,spodnja_meja,zgornja_meja)
-N <- 100
+N <- 10000
 set.seed(77)
 seznam <- replicate(N, sim_sprehod(p, spodnja_meja, zgornja_meja))
 max_length <- max(sapply(seznam, length))
 # make plot
 plot(c(1, max_length), c(spodnja_meja, zgornja_meja), type = "n",
-     main="Random walks", xlab="cas", ylab="vrednost")
+     main="Random walks", xlab="cas oz. stevilo korakov", ylab="vrednost")
 for (i in 1:N) {
   lines(1:length(seznam[[i]]), seznam[[i]],
         col = colorPicker(seznam[[i]], max_length), lwd = 0.5)
@@ -72,6 +96,39 @@ for (i in 1:N) {
 abline(h = 0, lty = "dashed")
 abline(h = spodnja_meja, lwd = 2)
 abline(h = zgornja_meja, lwd = 2)
+
+#poglejmo si verjetnosti: 
+
+verjetnost_da_prej_dosezemo_zgornjo_mejo <- function(seznam){
+  stevilo_sprehodov <- length(seznam)/3
+  koncal_zgoraj <- 0
+  for (i in seq(2, length(seznam), by = 3)) {
+      if (abs(seznam[[i]]) - seznam[[i+1]] < 0){
+        koncal_zgoraj <- koncal_zgoraj + 1 
+      }
+  }
+  iskana_verjetnost <- koncal_zgoraj / stevilo_sprehodov
+  return(iskana_verjetnost)
+}
+verjetnost_da_prej_dosezemo_zgornjo_mejo(seznam)
+#narišimo verjetnost 
+
+# stevilo simulacij: 
+x <- c(1:N)
+x
+y <- c()
+y
+for (i in seq(3, length(seznam), by = 3)) {
+  b <- seznam[1:i]
+  p <- verjetnost_da_prej_dosezemo_zgornjo_mejo(b)
+  y <- c(y,p)
+}
+vrednosti_verjetnosti <- data.frame(x,y)
+plot(x,y,
+     type="l", lwd=1, xlab="Število simulacij", ylab="Verjetnost")
+abline(h = abs(spodnja_meja)/(abs(spodnja_meja)+zgornja_meja), lty = "dashed")
+
+
 
 # povprecni_cas zadetka 
 povprecje <- function(seznam){

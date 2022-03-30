@@ -1,0 +1,110 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\title{Random\_walks}
+\author{Zan Kastelic}
+\date{6 3 2022}
+
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Random\_walks},
+  pdfauthor={Zan Kastelic},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\begin{document}
+\maketitle
+
+Naj bo \(X\) slučajna spremenljivka porazdeljena kot \[
+X_t \sim \begin{pmatrix}
+-1 & 1 \\
+1-p & p
+\end{pmatrix} 
+\] za \(t=1,2, \ldots\), kjer je \(p \in [0,1]\). Če je
+\(p=\frac{1}{2}\), pravimo, da je naključni sprehod simetričen.
+Naključni sprehod sledi kumulativni vsoti teh naključnih spremevljivk,
+kar lahko zapišemo kot \[
+S_0=0 \quad S_t=\sum_{k=1}^tX_k.
+\]
+
+Poglejmo si najprej simetričen sprehod, torej \(p=\frac{1}{2}\).
+
+\includegraphics{random_walks_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+Iz verjetnosti vemo, da naključni sprehod spada med markovske procese.
+Naj bosta \(a,b > 0\). Naj bo \(b\) zgornja meja, \(-a\) pa spodnja
+meja. Potem velja: \[
+P(\text{da prej zadanemo $b$ kot $-a$ })=\begin{cases}
+      \frac{a}{a+b} & \text{če je } p=\frac{1}{2}, \\
+      \frac{1-(\frac{q}{p})^a}{1-(\frac{q}{p})^{a+b}} & \text{če je } p \neq \frac{1}{2}.
+    \end{cases}       
+\]
+
+Naj bo \(T = T_{-a} \wedge T_b\) čas ustavljanja, kjer sta
+\(T_{-a}=inf\{t \geq 0 | S_t = -a \}\) oziroma
+\(T_b=inf\{t \geq 0 | S_t = b \}\). Koliko korakov bomo naredili v
+povprečju, preden zadanemo \(a\) oziroma \(b\)?S predavanj pri predmetih
+Verjetnost 2 in Finančna matematika vemo, da velja \[
+E(T)=a\cdot b.
+\]
+
+Slučajni sprehod v \(\mathbb{R}^3\)
+
+Sprehod v kocki; narišimo najprej kocko: test
+
+\end{document}

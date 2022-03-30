@@ -1,0 +1,179 @@
+\documentclass[12pt,a4paper]{amsart}
+% ukazi za delo s slovenscino -- izberi kodiranje, ki ti ustreza
+\usepackage[slovene]{babel}
+\usepackage[cp1250]{inputenc}
+%\usepackage[T1]{fontenc}
+%\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{url}
+%\usepackage[normalem]{ulem}
+\usepackage[dvipsnames,usenames]{color}
+\usepackage{graphicx}
+
+% ne spreminjaj podatkov, ki vplivajo na obliko strani
+\textwidth 15cm
+\textheight 24cm
+\oddsidemargin.5cm
+\evensidemargin.5cm
+\topmargin-5mm
+\addtolength{\footskip}{10pt}
+\pagestyle{plain}
+\overfullrule=15pt % oznaci predlogo vrstico
+
+
+% ukazi za matematicna okolja
+\theoremstyle{definition} % tekst napisan pokoncno
+\newtheorem{definicija}{Definicija}[section]
+\newtheorem{primer}[definicija]{Primer}
+\newtheorem{opomba}[definicija]{Opomba}
+
+\renewcommand\endprimer{\hfill$\diamondsuit$}
+
+
+\theoremstyle{plain} % tekst napisan posevno
+\newtheorem{lema}[definicija]{Lema}
+\newtheorem{izrek}[definicija]{Izrek}
+\newtheorem{trditev}[definicija]{Trditev}
+\newtheorem{posledica}[definicija]{Posledica}
+
+
+% za stevilske mnozice uporabi naslednje simbole
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\C}{\mathbb C}
+\newcommand{\Q}{\mathbb Q}
+
+
+% ukaz za slovarsko geslo
+\newlength{\odstavek}
+\setlength{\odstavek}{\parindent}
+\newcommand{\geslo}[2]{\noindent\textbf{#1}\hspace*{3mm}\hangindent=\parindent\hangafter=1 #2}
+
+
+% naslednje ukaze ustrezno popravi
+\newcommand{\program}{Finanèna matematika} % ime studijskega programa: Matematika/Finan"cna matematika
+\newcommand{\imeavtorja}{Žan Kastelic} % ime avtorja
+\newcommand{\imementorja}{prof.~dr. Sergio Cabello Justo} % akademski naziv in ime mentorja
+\newcommand{\imesomentorja}{asist. Gašper Domen Romih}
+\newcommand{\naslovdela}{Random walks}
+\newcommand{\letnica}{2012} %letnica diplome
+
+
+% vstavi svoje definicije ...
+
+
+
+
+\begin{document}
+
+% od tod do povzetka ne spreminjaj nicesar
+\thispagestyle{empty}
+\noindent{\large
+UNIVERZA V LJUBLJANI\\[1mm]
+FAKULTETA ZA MATEMATIKO IN FIZIKO\\[5mm]
+\program\ -- 2.~stopnja}
+\vfill
+
+\begin{center}{\large
+\imeavtorja\\[2mm]
+{\bf \naslovdela}\\[10mm]
+Matematika z raèunalnikm\\[1cm]
+Mentor: \imementorja\\[0.25cm]
+Somentor: \imesomentorja}
+\end{center}
+\vfill
+
+\noindent{\large
+Ljubljana, \letnica}
+\pagebreak
+
+\thispagestyle{empty}
+% kazalo 
+%\tableofcontents 
+\pagebreak
+
+
+
+
+
+% tu se zacne besedilo seminarja
+\section{Nakljuèni sprehodi}
+Naj bo $X$ sluèajna spremenljivka porazdeljena kot
+\[
+X_t \sim \begin{pmatrix}
+-1 & 1 \\
+1-p & p
+\end{pmatrix} 
+\]
+za $t=1,2, \ldots$, kjer je $p \in [0,1]$. Èe je $p=\frac{1}{2}$, pravimo, 
+da je nakljuèni sprehod simetrièen. Nakljuèni sprehod sledi kumulativni vsoti
+teh nakljuènih spremevljivk, kar lahko zapišemo kot 
+\[
+S_0=0 \quad S_t=\sum_{k=1}^tX_k.
+\]
+Poglejmo si najprej nakljuèen sprehod po celih številih. Iz verjetnosti vemo, da nakljuèni sprehod spada med markovske procese. Naj bosta $a,b > 0, a,b \in \N$. Naj bo $b$ zgornja meja, $-a$ pa spodnja meja. Potem velja: 
+\[
+P(S_t = b)=\begin{cases}
+      \frac{a}{a+b} & \text{èe je } p=\frac{1}{2}, \\
+      \frac{1-(\frac{q}{p})^a}{1-(\frac{q}{p})^{a+b}} & \text{èe je } p \neq \frac{1}{2}.
+    \end{cases}       
+\]
+oziroma 
+\[
+P(S_t = -a)=\begin{cases}
+      \frac{b}{a+b} & \text{èe je } p=\frac{1}{2}, \\
+      \frac{1-(\frac{q}{p})^b}{1-(\frac{q}{p})^{a+b}} & \text{èe je } p \neq \frac{1}{2}.
+    \end{cases}       
+\]
+Poglejmo si najprej eno simulacijo simetriènega nakljuènega sprehoda, torej $p=\frac{1}{2}$. Da lahko dodamo še èasovno komponento zarotirajmo os tako, da bo na abcisni osi èas, na ordinatni pa vrednost sluèajnega sprehoda. Za spodnjo mejo si izberemo $-5$, za zgornjo pa $5$. 
+
+\begin{figure}[h]\label{fig: primer}
+\includegraphics[scale=0.6]{sprehod}
+\caption{Simetrièni nakljuèni sprehod.}
+\end{figure}
+
+S slike~\ref{fig: primer} razberemo, da smo prej dosegli spodnjo mejo in da smo za to potrebovali 40 korakov. Simulirajmo sedaj $10.000$ sprehodov z zgornjo mejo $25$ in spodnjo mejo $-25$. Zaradi velikega števila sprehodov so sprehodi obarvani. Sprehodi, ki dosežejo zgornjo mejo, so obarvani z modro, ostali pa z oranžno. Sprehodi se med seboj razlikujejo tudi po svetlosti - tisti bolj temni prej dosežejo mejo, kot svetlejši. 
+
+\begin{figure}[h]
+\includegraphics[scale=0.6]{vec_sprehodov}
+\caption{10.000 nakljuènih simetriènih sprehodov.}
+\end{figure}
+
+Poglejmo si verjetnost, da prej dosežemo zgornjo mejo. S pomoèjo slike~\ref{fig: verjetnost} se lahko preprièamo zgornja formula drži. Èe je $p =\frac{1}{2}, -a = -25, b=25$, verjetnost znaša $0.5$. Simulirana vrednost pa je enaka $0.5063$. 
+
+
+\begin{figure}[h]\label{fig: verjetnost}
+\includegraphics[scale=0.6]{verjetnost_sprehodov}
+\caption{Verjetnost, da prej dosežemo zgornjo mejo.}
+\end{figure}
+
+Poglejmo si še primer, ko sta $a$ in $b$ razlièna. Naj bo $-a=-17$ in $b=24$. Opazimo, da je spodnja meja dosežena veèkrat kot zgornja, kar je logièno, saj je manj oddaljena od izhodišèa. 
+
+\begin{figure}[h]\label{fig: verjetnost}
+\includegraphics[scale=0.6]{razlicna_ab}
+\caption{10.000 nakljuènih sprehodov.}
+\end{figure}
+
+Formula nam pove, da je verjetnost, da prej dosežemo zgornjo mejo enaka $\frac{17}{17+24}=\frac{17}{41} 	\approx 0.4146341$. Simulirana vrednost znaša $0.4223$.
+
+\begin{figure}[h]
+\includegraphics[scale=0.6]{razlicna_ab_verjetnost}
+\caption{Verjetnost, da prej dosežemo zgornjo mejo.}
+\end{figure}
+\subsection{Prièakovano število korakov zadetja meje}
+Naj bo $T = T_{-a} \wedge T_b$ èas ustavljanja, kjer sta $T_{-a}=\inf\{t \geq 0 | S_t = -a \}$ oziroma $T_b=\inf\{t \geq 0 | S_t = b \}$. Koliko korakov bomo naredili v povpreèju, preden zadanemo $a$ oziroma $b$? S predavanj pri predmetih Verjetnost 2 in Finanèna matematika vemo, da velja 
+\[
+E(T)=a \cdot b.
+\]
+
+
+
+
+
+
+
+
+
+\end{document}
+
