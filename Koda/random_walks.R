@@ -247,7 +247,7 @@ saveWidget(fig, "sprehod_v_prostoru.html")
 
 # kocka
 
-
+# začnemo v oglišču A
 kocka <- graph(
   c("A", "B","B", "A", 
     "A", "D", "D", "A",
@@ -262,7 +262,7 @@ kocka <- graph(
     "C", "G", "G", "C",
     "H", "G", "G", "H")
 )
-# začnemo v oglišču A
+# začnemo v oglišču 1
 
 kocka <- graph(
   c(1, 2,2, 1, 
@@ -337,3 +337,55 @@ povpecen_cas_vrnitve <- function(st_simulacij){
   rezultat <- vsota / st_simulacij
   return(rezultat)
 }
+
+# povprečen čas obiska vseh oglišč
+
+obisci_vse_kocka <- function(){
+  pot <- c(1)
+  sosed <- c(2,4,5)
+  kam <- sample(sosed, 1)
+  pot <- c(pot,kam)
+  while (length(rle(sort(pot))$values) < 8) {
+    if (kam == 2){
+      sosedi <- c(1,3,6)
+      kam <- sample(sosedi, 1)
+      pot <- c(pot,kam)
+    } else if (kam == 3){
+      sosedi <- c(2,4,7)
+      kam <- sample(sosedi, 1)
+      pot <- c(pot,kam)
+    } else if (kam == 4){
+      sosedi <- c(1,3,8)
+      kam <- sample(sosedi, 1)
+      pot <- c(pot,kam)
+    } else if (kam == 5){
+      sosedi <- c(1,6,8)
+      kam <- sample(sosedi, 1)
+      pot <- c(pot,kam)
+    } else if (kam == 6){
+      sosedi <- c(2,5,7)
+      kam <- sample(sosedi, 1)
+      pot <- c(pot,kam)
+    } else if (kam == 7){
+      sosedi <- c(3,6,8)
+      kam <- sample(sosedi, 1)
+      pot <- c(pot,kam)
+    } else {
+      sosedi <- c(4,5,7)
+      kam <- sample(sosedi, 1)
+      pot <- c(pot,kam)
+    }
+  }
+  return(pot)
+}
+
+povpecen_cas_obiska <- function(st_simulacij){
+  vsota <- 0 
+  for (i in 1:st_simulacij){
+    vsota <- vsota + (length(obisci_vse_kocka())-1)
+  }
+  rezultat <- vsota / st_simulacij
+  return(rezultat)
+}
+
+
