@@ -28,16 +28,6 @@ sim_sprehod <- function(p, spodnja_meja, zgornja_meja){
   return(vrednosti)
 }
 
-nesim_sprehod <- function(p, spodnja_meja, zgornja_meja){
-  vektor_vrednosti <- c(0)
-  vsota <- 0
-  while (vsota > spodnja_meja & vsota < zgornja_meja){
-    vsota <- vsota + ifelse(runif(1) < p, 1, -1)
-    vektor_vrednosti <- c(vektor_vrednosti, vsota)
-  }
-  return(vektor_vrednosti)
-}
-
 ## 1 sprehod ## 
 vektor_vrednosti <- c(0)
 vsota <- 0
@@ -75,7 +65,7 @@ colorPicker <- function(vsota, max_length,
 }
 ######### za barve #######################
 
-
+################################## SIMETRIČEN SPREHOD #######################
 vektor_vrednosti <- c(0)
 vsota <- 0
 p = 0.50
@@ -128,9 +118,78 @@ plot(x,y,
      type="l", lwd=1, xlab="Število simulacij", ylab="Verjetnost")
 abline(h = abs(spodnja_meja)/(abs(spodnja_meja)+zgornja_meja), lty = "dashed")
 
+################################## SIMETRIČEN SPREHOD #######################
+
+################################## NESIMETRIČEN SPREHOD #####################
+
+nesim_sprehod <- function(p_gor, spodnja_meja, zgornja_meja){
+  vektor_vrednosti <- c(0)
+  vsota <- 0
+  spodaj <- 0 
+  zgoraj <- 0
+  while (vsota > spodnja_meja & vsota < zgornja_meja){
+    #  ifelse(test, yes, no)
+    a <- ifelse(runif(1) < p_gor, 1, -1)
+    vsota <- vsota + a
+    vektor_vrednosti <- c(vektor_vrednosti, vsota)
+    if (a == -1){
+      spodaj <- spodaj + a
+    } else {
+      zgoraj <- zgoraj + a
+    }
+  }
+  vrednosti <- list(vektor_vrednosti, spodaj, zgoraj)
+  return(vrednosti)
+}
+
+vektor_vrednosti_ne_sim <- c(0)
+vsota_ne_sim <- 0
+p_gor = 0.75
+spodnja_meja_ne_sim <- -4
+zgornja_meja_ne_sim <- 36
+a <- nesim_sprehod(p_gor,spodnja_meja_ne_sim,zgornja_meja_ne_sim)
+N <- 10000
+set.seed(53)
+seznam_ne_sim <- replicate(N, nesim_sprehod(p_gor,spodnja_meja_ne_sim,zgornja_meja_ne_sim))
+max_length <- max(sapply(seznam_ne_sim, length))
+# make plot
+plot(c(1, max_length), c(spodnja_meja_ne_sim, zgornja_meja_ne_sim), type = "n",
+     main="Random walks", xlab="cas oz. stevilo korakov", ylab="vrednost")
+for (i in 1:N) {
+  lines(1:length(seznam_ne_sim[[i]]), seznam_ne_sim[[i]],
+        col = colorPicker(seznam_ne_sim[[i]], max_length), lwd = 0.5)
+}
+abline(h = 0, lty = "dashed")
+abline(h = spodnja_meja_ne_sim, lwd = 2)
+abline(h = zgornja_meja_ne_sim, lwd = 2)
+
+verjetnost_da_prej_dosezemo_zgornjo_mejo(seznam_ne_sim)
+#narišimo verjetnost 
+
+# stevilo simulacij: 
+x <- c(1:N)
+x
+y <- c()
+y
+for (i in seq(3, length(seznam_ne_sim), by = 3)) {
+  b <- seznam_ne_sim[1:i]
+  p <- verjetnost_da_prej_dosezemo_zgornjo_mejo(b)
+  y <- c(y,p)
+}
+vrednosti_verjetnostiseznam_ne_sim <- data.frame(x,y)
+plot(x,y,
+     type="l", lwd=1, xlab="Število simulacij", ylab="Verjetnost")
+abline(h = (1-((1-p_gor)/(p_gor))^(abs(spodnja_meja_ne_sim)))/(1-((1-p_gor)/(p_gor))^(abs(spodnja_meja_ne_sim)+zgornja_meja_ne_sim)), 
+       lty = "dashed")
+
+# tocno ta primer: 80/81 ~ 0.987654321 --> izkaže se, da formula deluje 
 
 
-# povprecni_cas zadetka 
+
+################################## NESIMETRIČEN SPREHOD #####################
+
+################################## POVPREČNI ČAS ZADETKA #####################
+
 povprecje <- function(seznam){
   stevilo_poti <- length(seznam)
   vsota <- 0
@@ -141,7 +200,11 @@ povprecje <- function(seznam){
   return(e)
 }
 st_korakov <- povprecje(seznam)
-# slucajni sprehod v R^2
+st_korakov_ne_sim <- povprecje(seznam_ne_sim)
+
+################################## POVPREČNI ČAS ZADETKA #####################
+
+################################## SLUČAJNI SPREHOD V Z^2 ####################
 sprehod_po_ravnini_simetricen <- function(stevilo_sprehodov, stevilo_korakov,plot = TRUE){
   require(ggplot2)
   polozaj <- matrix(ncol = 2)
