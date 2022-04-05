@@ -9,6 +9,17 @@
 %\usepackage[normalem]{ulem}
 \usepackage[dvipsnames,usenames]{color}
 \usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xspace}
+\usepackage{mathrsfs}
+\usepackage{color}
+\graphicspath{ {./images/} }
+\usepackage{graphics} 
+\usepackage{epsfig}
+\usepackage{pdfpages}
+\usepackage{amsthm}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
 
 % ne spreminjaj podatkov, ki vplivajo na obliko strani
 \textwidth 15cm
@@ -98,82 +109,289 @@ Ljubljana, \letnica}
 
 
 % tu se zacne besedilo seminarja
+\section{Opis in programsko okolje}
+Pogledali si bomo nakljuène sprehode na premici, ravnini in prostoru ter razliènih družinah grafov z nekaterimi parametri (d-dimenzionalna mreža, neskonèna d-pravilna drevesa, 2-pravilna drevesa višine d, d-dimenzionalna hiperkocka itd.). S simulacijo nakljuènih sprehodov se bomo sprehajali po takšnih objektih: simulirali bomo èas pokrivanja, èas zadetkov za ralièna oglišèa, število obiskov oglišè, itd.
+
+Za simulacije in izraèune bom uporabil programsko okolje R. 
 \section{Nakljuèni sprehodi}
 Naj bo $X$ sluèajna spremenljivka porazdeljena kot
-\[
+\begin{equation} \label{eq:bernoulli}
 X_t \sim \begin{pmatrix}
 -1 & 1 \\
 1-p & p
 \end{pmatrix} 
-\]
+\end{equation}
 za $t=1,2, \ldots$, kjer je $p \in [0,1]$. Èe je $p=\frac{1}{2}$, pravimo, 
 da je nakljuèni sprehod simetrièen. Nakljuèni sprehod sledi kumulativni vsoti
 teh nakljuènih spremevljivk, kar lahko zapišemo kot 
+\begin{equation} \label{eq:kumulativna_vsota}
+S_t=\sum_{k=1}^tX_k,
+\end{equation}
+kjer je 
 \[
-S_0=0 \quad S_t=\sum_{k=1}^tX_k.
+S_0=0.
 \]
 Poglejmo si najprej nakljuèen sprehod po celih številih. Iz verjetnosti vemo, da nakljuèni sprehod spada med markovske procese. Naj bosta $a,b > 0, a,b \in \N$. Naj bo $b$ zgornja meja, $-a$ pa spodnja meja. Potem velja: 
-\[
+\begin{equation} \label{eq:prej_b_kot_a}
 P(S_t = b)=\begin{cases}
       \frac{a}{a+b} & \text{èe je } p=\frac{1}{2}, \\
       \frac{1-(\frac{q}{p})^a}{1-(\frac{q}{p})^{a+b}} & \text{èe je } p \neq \frac{1}{2}.
     \end{cases}       
-\]
+\end{equation}
 oziroma 
-\[
+\begin{equation} \label{eq:prej_a_kot_b}
 P(S_t = -a)=\begin{cases}
       \frac{b}{a+b} & \text{èe je } p=\frac{1}{2}, \\
       \frac{1-(\frac{q}{p})^b}{1-(\frac{q}{p})^{a+b}} & \text{èe je } p \neq \frac{1}{2}.
     \end{cases}       
-\]
+\end{equation}
+\subsection{Simetrièni nakljuèni sprehodi}
 Poglejmo si najprej eno simulacijo simetriènega nakljuènega sprehoda, torej $p=\frac{1}{2}$. Da lahko dodamo še èasovno komponento zarotirajmo os tako, da bo na abcisni osi èas, na ordinatni pa vrednost sluèajnega sprehoda. Za spodnjo mejo si izberemo $-5$, za zgornjo pa $5$. 
 
-\begin{figure}[h]\label{fig: primer}
-\includegraphics[scale=0.6]{sprehod}
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[scale=0.5]{sprehod}
 \caption{Simetrièni nakljuèni sprehod.}
+\label{fig:primer}
+\end{center}
 \end{figure}
 
-S slike~\ref{fig: primer} razberemo, da smo prej dosegli spodnjo mejo in da smo za to potrebovali 40 korakov. Simulirajmo sedaj $10.000$ sprehodov z zgornjo mejo $25$ in spodnjo mejo $-25$. Zaradi velikega števila sprehodov so sprehodi obarvani. Sprehodi, ki dosežejo zgornjo mejo, so obarvani z modro, ostali pa z oranžno. Sprehodi se med seboj razlikujejo tudi po svetlosti - tisti bolj temni prej dosežejo mejo, kot svetlejši. 
+S slike \ref{fig:primer} razberemo, da smo prej dosegli spodnjo mejo in da smo za to potrebovali 40 korakov. Simulirajmo sedaj $10.000$ sprehodov z zgornjo mejo $25$ in spodnjo mejo $-25$.
 
-\begin{figure}[h]
+\begin{figure}[ht]
+\begin{center}
 \includegraphics[scale=0.6]{vec_sprehodov}
 \caption{10.000 nakljuènih simetriènih sprehodov.}
+\label{fig:simulacija_primer}
+\end{center}
 \end{figure}
 
-Poglejmo si verjetnost, da prej dosežemo zgornjo mejo. S pomoèjo slike~\ref{fig: verjetnost} se lahko preprièamo zgornja formula drži. Èe je $p =\frac{1}{2}, -a = -25, b=25$, verjetnost znaša $0.5$. Simulirana vrednost pa je enaka $0.5063$. 
+Zaradi velikega števila sprehodov so na sliki \ref{fig:simulacija_primer} sprehodi obarvani. Sprehodi, ki dosežejo zgornjo mejo, so obarvani z modro, ostali pa z oranžno. Simulacije sprehodov se med seboj razlikujejo tudi po svetlosti - tisti bolj temni prej dosežejo mejo, kot svetlejši. 
 
+Poglejmo si verjetnost, da prej dosežemo zgornjo mejo - preverimo torej, èe drži formula \eqref{eq:prej_b_kot_a}.
 
-\begin{figure}[h]\label{fig: verjetnost}
-\includegraphics[scale=0.6]{verjetnost_sprehodov}
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[scale=0.48]{verjetnost_sprehodov}
 \caption{Verjetnost, da prej dosežemo zgornjo mejo.}
+\label{fig:verjetnost_sprehodov}
+\end{center}
 \end{figure}
 
-Poglejmo si še primer, ko sta $a$ in $b$ razlièna. Naj bo $-a=-17$ in $b=24$. Opazimo, da je spodnja meja dosežena veèkrat kot zgornja, kar je logièno, saj je manj oddaljena od izhodišèa. 
+S pomoèjo slike \ref{fig:verjetnost_sprehodov} se lahko preprièamo, da zgornja formula \eqref{eq:prej_b_kot_a} drži. Èe je $p =\frac{1}{2}, -a = -25, b=25$ je verjetnost enaka $0.5$. Simulirana vrednost pa znaša $0.5063$. 
 
-\begin{figure}[h]\label{fig: verjetnost}
+Poglejmo si še primer, ko sta $a$ in $b$ razlièna. Naj bo $-a=-17$ in $b=24$.  
+
+\begin{figure}[ht]
+\begin{center}
 \includegraphics[scale=0.6]{razlicna_ab}
 \caption{10.000 nakljuènih sprehodov.}
+\label{fig:verjetnost}
+\end{center}
 \end{figure}
 
-Formula nam pove, da je verjetnost, da prej dosežemo zgornjo mejo enaka $\frac{17}{17+24}=\frac{17}{41} 	\approx 0.4146341$. Simulirana vrednost znaša $0.4223$.
+S slike \ref{fig:verjetnost} opazimo, da je spodnja meja dosežena veèkrat kot zgornja. To je povsem smiselno, saj je manj oddaljena od izhodišèa. Formula nam pove \eqref{eq:prej_b_kot_a}, da je verjetnost, da prej dosežemo zgornjo mejo enaka $\frac{17}{17+24}=\frac{17}{41} 	\approx 0.4146341$.
 
-\begin{figure}[h]
-\includegraphics[scale=0.6]{razlicna_ab_verjetnost}
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[scale=0.5]{razlicna_ab_verjetnost}
 \caption{Verjetnost, da prej dosežemo zgornjo mejo.}
+\label{fig:razlicna_ab_verjetnost}
+\end{center}
 \end{figure}
-\subsection{Prièakovano število korakov zadetja meje}
+
+Simulirana vrednost znaša $0.4223$, kar nam prikazuje slika \ref{fig:razlicna_ab_verjetnost}.
+
+\subsection{Nesimetrièni nakljuèni sprehodi}
+Sem spadajo vsi nakljuèni sprehodi katerih $p$ je razlièen od $\frac{1}{2}$. 
+
+Poglejmo si simulacijo $10.000$ nakljuènih sprehodov, kjer je $p=\frac{3}{4}$. Za spodnjo mejo vzemimo $-4$, za zgornjo pa $36$.  
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[scale=0.8]{ne_sim_sprehod}
+\caption{10.000 nesimetriènih nakljuènih sprehodov.}
+\label{fig:ne_simetricen}
+\end{center}
+\end{figure}
+
+V konkretnem primeru je bila zgornja meja dosežena kar 9875-krat. Kolikokrat in v koliko korakih je bila meja dosežena, si bomo pogledali v naslednjem razdelku. Poglejmo si še verjetnost, da pri danem $p$-ju prej dosežemo zgornjo mejo. Formula \ref{eq:prej_b_kot_a} nam da
+\[
+\frac{1-(\frac{q}{p})^a}{1-(\frac{q}{p})^{a+b}}=\frac{1-(\frac{0.25}{0.75})^4}{1-(\frac{0.25}{0.75})^{4+36}}=\frac{80}{81} \approx 0.98765.
+\]
+
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[scale=0.5]{ne_simetricen}
+\caption{Verjetnost, da prej dosežemo zgornjo mejo.}
+\label{fig:ne_simetricen}
+\end{center}
+\end{figure}
+
+S pomoèjo simulacije dobimo $0.9875$ kar je zelo dober približek. 
+
+
+
+
+\section{Prièakovano število korakov zadetja meje}
+\subsection{Simetrièni sprehod}
 Naj bo $T = T_{-a} \wedge T_b$ èas ustavljanja, kjer sta $T_{-a}=\inf\{t \geq 0 | S_t = -a \}$ oziroma $T_b=\inf\{t \geq 0 | S_t = b \}$. Koliko korakov bomo naredili v povpreèju, preden zadanemo $a$ oziroma $b$? S predavanj pri predmetih Verjetnost 2 in Finanèna matematika vemo, da velja 
 \[
 E(T)=a \cdot b.
 \]
 
+Èe se spomnimo primera, kjer je bila spodnja meja $-25$ in zgornja meja tudi $25$, je torej $E(T)=625$. S pomomèjo simulacije dobimo $625.328$. 
+
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{|c|c|c|}
+število korakov: $10.000$& \begin{tabular}{@{}c@{}}Prièakovano št. \\ korakov \end{tabular} & \begin{tabular}{@{}c@{}}Št. korakov \\ v simulaciji\end{tabular} \\
+\hline
+$a=-5, b=5$ & $25$  & $25.0814$ \\
+$a=-10, b=10$ & $100$  & $100.1404$ \\ 
+$a=-7, b=18$ & $126$  & $126.2341$ \\
+$a=-20, b=17$ & $340$  & $340.3122$ \\
+$a=-25, b=25$ & $625$  & $625.328$ \\
+\end{tabular}
+\end{center}
+\caption{Tabela simulacij prièakovanih vrednosti.}
+\label{tab:st_korakov_sim}
+\end{table}
+
+Iz tabele \ref{tab:st_korakov_sim} je razvidno, da simulacije podajo kar dober približek. 
+
+\subsection{Nesimetrièni sprehod}
 
 
+\newpage
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\begin{tabular}{@{}c@{}}število korakov: $10.000$  \\ $p=0.61$ \end{tabular}& \begin{tabular}{@{}c@{}}Prièakovano št. \\ korakov \end{tabular} & \begin{tabular}{@{}c@{}}Št. korakov \\ v simulaciji\end{tabular} \\
+\hline
+$a=-5, b=5$ & $??$  & $18.1628$ \\
+$a=-10, b=10$ & $??$   & $44.9518$ \\ 
+$a=-7, b=18$ & $??$  & $76.9416$ \\
+$a=-20, b=17$ & $??$   & $77.1638$ \\
+$a=-25, b=25$ & $??$   & $113.7568$ \\
+$a=-5, b=25$ & $??$   & $98.8776$ \\
+\end{tabular}
+\end{center}
+\caption{Tabela simulacij prièakovanih vrednosti.}
+\label{tab:st_korakov_sim}
+\end{table}
+
+\subsection{Prièakovana vrednost kumulativne vsote}
+\subsubsection{Simetrièni sprehod}
+Vemo, da velja 
+\[
+E(X_i)= 0.
+\]
+Potem je 
+\begin{equation} \label{eq1}
+\begin{split}
+E(S_n) & = E(\sum_{i=1}^{n}X_i) \\
+ & = \sum_{i=1}^{n} E(X_i) \\
+ & = \sum_{i=1}^{n} (2p -1)  \\
+  & = 0.
+\end{split}
+\end{equation}
+\subsubsection{Nesimetrièni sprehod}
+Izpeljimo formulo za nesimetrièni sprehod: vemo, da je: 
+\[
+E(X_i)= p \cdot 1 + q \cdot (-1) = 2p -1.
+\]
+Raèunamo naprej: 
+\begin{equation} \label{eq2}
+\begin{split}
+E(S_n) & = E(\sum_{i=1}^{n}X_i) \\
+ & = \sum_{i=1}^{n} E(X_i) \\
+ & = \sum_{i=1}^{n} (2p -1)  \\
+  & = n(2p -1).
+\end{split}
+\end{equation}
 
 
+\newpage
+\section{Nakljuèni sprehod v ravnini s celimi števili}
+\subsection{Simetrièni sprehod}
+Simetrièen sprehod v ravnini se zaène v toèki $(0,0)$ in gre z verjetnostjo $p=0.25$ gor, dol, levo ali desno.  
 
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[scale=0.65]{zgled_sprehod}
+\caption{Nakljuèni simetrièni sprehod v ravnini.}
+\label{fig:zgled_sprehod}
+\end{center}
+\end{figure}
 
+Na sliki \ref{fig:zgled_sprehod} je prikazan simetrièen sprehod po $100$ korakih. 
+\subsection{Nesimetrièni sprehod}
 
+\section{Nakljuèni sprehod v prostoru s celimi števili}
+\subsection{Simetrièni sprehod}
+\subsection{Nesimetrièni sprehod}
 
+\newpage
+\section{Nakljuèni sprehod v geometrijskih telesih}
+\subsection{Kocka}
+
+Brez škode za splošnost lahko sprehod v kocki zaènemo v kateremkoli oglišèu (npr. v $1$). V vsako sosednje oglišèe (v tem primeru $2$,$4$ ali $5$) lahko skoèimo z verjetnostjo $\frac{1}{3}$ in tako naprej. Poglejmo si nek nakljuèen sprehod po kocki 
+\[
+1,2,3,2,6,5,8,4,3,2,6,2,6,5,1.
+\]
+Izraèunajmo prièakovani èas vrnitve. Iz verjetnosti vemo, da je prièakovani èas $8$ korakov. 
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[scale=0.5]{kocka_stevilke}
+\caption{Predstavitev kocke v programu R.}
+\label{fig:zgled_sprehod}
+\end{center}
+\end{figure}
+
+Izraèunajmo prièakovani èas vrnitve. Iz verjetnosti vemo, da je prièakovani èas $8$ korakov. 
+
+\newpage
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{|c|c|}
+Število simulacij& \begin{tabular}{@{}c@{}}Prièakovano št. \\ korakov do vrnitve \end{tabular}  \\
+\hline
+$5$& $6.8$   \\
+$10$& $11.2$   \\
+$15$& $8.8$   \\
+$20$& $6.7$   \\
+$30$& $7.6$   \\
+$100$& $7.68$   \\
+$500$& $8.024$   \\
+$1000$& $7.918$   \\
+$10000$& $8.0252$   \\
+\end{tabular}
+\end{center}
+\caption{Tabela simulacij prièakovanih vrednosti vrnitve.}
+\label{tab:st_korakov_sim_kocka}
+\end{table}
+
+Iz tabele \ref{tab:st_korakov_sim_kocka} lahko opazimo, da zadeva relativno hitro skonvergira in  lahko verjamemo, da je prièakovan èas vrnitve v izhodišèe enak $8$. 
+
+Poglejmo si prièakovan èas, ko obišèemo vsa vozlišèa. Spet lahko zaènemo v $1$: 
+\[
+1,4,8,5,8,4,8,5,6,2,3,4,8,5,1,5,8,7.
+\]
+Ko prviè zagledamo vsa razlièna oglišèa nehamo šteti. Matematièni izraèun je kompleksen, zato verjemimo simulacijam.
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{|c|c|}
+Število simulacij& \begin{tabular}{@{}c@{}}Prièakovano št. \\ korakov do vrnitve \end{tabular}  \\
+\hline
+$10$& $24.6$   \\
+$100$& $19.36$   \\
+$1000$& $21.495$   \\
+$10000$& $21.2305$   \\
+\end{tabular}
+\end{center}
+\caption{Tabela simulacij prièakovanih vrednosti obsika vseh oglišè.}
+\label{tab:st_korakov_sim_kocka}
+\end{table}
 \end{document}
 

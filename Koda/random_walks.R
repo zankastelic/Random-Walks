@@ -6,6 +6,8 @@ library(animation)
 library(plotly)
 library(htmlwidgets)
 library(igraph)
+library(dplyr)
+library(ImageMagick)
 
 # za simetricen
 sim_sprehod <- function(p, spodnja_meja, zgornja_meja){
@@ -49,7 +51,39 @@ abline(h = zgornja_meja, lwd = 2)
 seznam1[[1]]
 ## 1 sprehod ##
 
+prestej <- function(seznam_ne_sim, spodnja_meja_ne_sim, zgornja_meja_ne_sim){
+  # je šel zgoraj in kok korakov je rabu
+  zgoraj <- c()
+  # je šel spodaj in kok korakov je rabu
+  spodaj <- c()
+  for (i in seq(1, length(seznam_ne_sim), by = 3)){
+    pot <- seznam_ne_sim[[i]]
+    pot
+    stevilo_korakov <- abs(seznam_ne_sim[[i+1]])+ abs(seznam_ne_sim[[i+2]])
+    stevilo_korakov
+    if (pot[length(pot)]==zgornja_meja_ne_sim){
+      zgoraj <- c(zgoraj,stevilo_korakov)
+      zgoraj
+    } else {
+      spodaj <- c(spodaj,stevilo_korakov)
+      spodaj
+    }
+  }
+  vrednosti <- list(spodaj, zgoraj)
+  return(vrednosti)
+}
 
+prestej_skupaj <- function(seznam_ne_sim, spodnja_meja_ne_sim, zgornja_meja_ne_sim){
+  skupaj <- c()
+  for (i in seq(1, length(seznam_ne_sim), by = 3)){
+    pot <- seznam_ne_sim[[i]]
+    pot
+    stevilo_korakov <- abs(seznam_ne_sim[[i+1]])+ abs(seznam_ne_sim[[i+2]])
+    stevilo_korakov
+    skupaj <- c(skupaj,stevilo_korakov)
+  }
+  return(skupaj)
+}
 
 ######### za barve #######################
 colorPicker <- function(vsota, max_length,
@@ -118,8 +152,78 @@ plot(x,y,
      type="l", lwd=1, xlab="Število simulacij", ylab="Verjetnost")
 abline(h = abs(spodnja_meja)/(abs(spodnja_meja)+zgornja_meja), lty = "dashed")
 
+stevilo_korakov_sim <- prestej(seznam, spodnja_meja, zgornja_meja)
+
+ttt_sim <- table(stevilo_korakov_sim[[1]])
+tttt_sim <- table(stevilo_korakov_sim[[2]])
+View(ttt_sim)
+View(tttt_sim)
+
+# za histogram
+zadet_spodaj <- stevilo_korakov_sim[[1]]
+hist(zadet_spodaj,
+     main="Število sprehodov, da so dosegli spodnjo mejo",
+     xlab="Število korakov",breaks= 100)
+zadet_zgoraj <- stevilo_korakov_sim[[2]]
+hist(zadet_zgoraj,
+     main="Število sprehodov, da so dosegli zgornjo mejo",
+     xlab="Število korakov",breaks= 100)
+
+stevilo_korakov_sim
+
+skupaj <- prestej_skupaj(seznam, spodnja_meja, zgornja_meja)
+hist(skupaj,
+     main="Število sprehodov, da so dosegli zgornjo/spodnjo mejo",
+     xlab="Število korakov",breaks= 100)
+
+povprecje_korakov <- table(skupaj)
+vrednosti <- as.numeric(names(povprecje_korakov))
+dobi_frekvenco  <- function(povprecje_korakov) {
+  frekvenca <- c()
+  for(i in 1:length(povprecje_korakov)){
+    frekvenca <- c(frekvenca,povprecje_korakov[[i]])
+  }
+  return(frekvenca)
+}
+frekvenca <- dobi_frekvenco(povprecje_korakov)
+
+stevec <- sum(vrednosti * frekvenca)
+imenovalec <- sum(frekvenca)
+povprecno_stevilo_korakov <- stevec/imenovalec
+
 ################################## SIMETRIČEN SPREHOD #######################
 
+########### pričakovano število korakov: simulacije #########################
+
+################################## SIMETRIČEN SPREHOD #######################
+vektor_vrednosti <- c(0)
+vsota <- 0
+p = 0.50
+spodnja_meja <- -17
+zgornja_meja <- 20
+a <- sim_sprehod(p,spodnja_meja,zgornja_meja)
+N <- 10000
+seznam <- replicate(N, sim_sprehod(p, spodnja_meja, zgornja_meja))
+stevilo_korakov_sim <- prestej(seznam, spodnja_meja, zgornja_meja)
+
+skupaj <- prestej_skupaj(seznam, spodnja_meja, zgornja_meja)
+povprecje_korakov <- table(skupaj)
+vrednosti <- as.numeric(names(povprecje_korakov))
+dobi_frekvenco  <- function(povprecje_korakov) {
+  frekvenca <- c()
+  for(i in 1:length(povprecje_korakov)){
+    frekvenca <- c(frekvenca,povprecje_korakov[[i]])
+  }
+  return(frekvenca)
+}
+frekvenca <- dobi_frekvenco(povprecje_korakov)
+
+stevec <- sum(vrednosti * frekvenca)
+imenovalec <- sum(frekvenca)
+povprecno_stevilo_korakov <- stevec/imenovalec
+povprecno_stevilo_korakov
+
+########### pričakovano število korakov: simulacije #########################
 ################################## NESIMETRIČEN SPREHOD #####################
 
 nesim_sprehod <- function(p_gor, spodnja_meja, zgornja_meja){
@@ -166,6 +270,30 @@ abline(h = zgornja_meja_ne_sim, lwd = 2)
 verjetnost_da_prej_dosezemo_zgornjo_mejo(seznam_ne_sim)
 #narišimo verjetnost 
 
+
+kolikokrat_dosezemo_zgornjo_mejo <- function(seznam_ne_sim, spodnja_meja_ne_sim, zgornja_meja_ne_sim){
+  dosezena_zgornja <- 0
+  for (i in seq(1, length(seznam_ne_sim), by = 3)){
+    a <- length(seznam_ne_sim[[i]])
+    b <- seznam_ne_sim[[i]]
+    c <- b[a]
+    if (c == zgornja_meja_ne_sim){
+      dosezena_zgornja <- dosezena_zgornja +1
+    }
+  }
+  return(dosezena_zgornja)
+}
+
+kolikokrat_dosezemo_zgornjo_mejo(seznam_ne_sim, spodnja_meja_ne_sim, zgornja_meja_ne_sim)
+
+
+stevilo_korakov_ne_sim <- prestej(seznam_ne_sim, spodnja_meja_ne_sim, zgornja_meja_ne_sim)
+
+ttt_ne_sim <- table(stevilo_korakov_ne_sim[[1]])
+tttt_ne_sim <- table(stevilo_korakov_ne_sim[[2]])
+View(ttt_ne_sim)
+View(tttt_ne_sim)
+
 # stevilo simulacij: 
 x <- c(1:N)
 x
@@ -183,6 +311,34 @@ abline(h = (1-((1-p_gor)/(p_gor))^(abs(spodnja_meja_ne_sim)))/(1-((1-p_gor)/(p_g
        lty = "dashed")
 
 # tocno ta primer: 80/81 ~ 0.987654321 --> izkaže se, da formula deluje 
+
+vektor_vrednosti <- c(0)
+vsota <- 0
+p_gor = 0.61
+spodnja_meja_ne_sim <- -5
+zgornja_meja_ne_sim <- 25
+N <- 10000
+seznam_ne_sim <- replicate(N, nesim_sprehod(p_gor,spodnja_meja_ne_sim,zgornja_meja_ne_sim))
+stevilo_korakov_sim <- prestej(seznam_ne_sim, spodnja_meja_ne_sim, zgornja_meja_ne_sim)
+
+skupaj <- prestej_skupaj(seznam_ne_sim, spodnja_meja_ne_sim, zgornja_meja_ne_sim)
+povprecje_korakov <- table(skupaj)
+vrednosti <- as.numeric(names(povprecje_korakov))
+dobi_frekvenco  <- function(povprecje_korakov) {
+  frekvenca <- c()
+  for(i in 1:length(povprecje_korakov)){
+    frekvenca <- c(frekvenca,povprecje_korakov[[i]])
+  }
+  return(frekvenca)
+}
+frekvenca <- dobi_frekvenco(povprecje_korakov)
+
+stevec <- sum(vrednosti * frekvenca)
+imenovalec <- sum(frekvenca)
+povprecno_stevilo_korakov <- stevec/imenovalec
+povprecno_stevilo_korakov
+
+
 
 
 
@@ -205,7 +361,7 @@ st_korakov_ne_sim <- povprecje(seznam_ne_sim)
 ################################## POVPREČNI ČAS ZADETKA #####################
 
 ################################## SLUČAJNI SPREHOD V Z^2 ####################
-sprehod_po_ravnini_simetricen <- function(stevilo_sprehodov, stevilo_korakov,plot = TRUE){
+sprehod_po_ravnini_simetricen <- function(stevilo_sprehodov, stevilo_korakov){
   require(ggplot2)
   polozaj <- matrix(ncol = 2)
   polozaj
@@ -265,7 +421,7 @@ p <- ggplot(sprehod_v_ravnini, aes(x = x, y = y, colour = pot))
 p <- p + geom_path()
 p
 
-ravnina_sprehod <- sprehod_po_ravnini_simetricen(4, 10000)
+ravnina_sprehod <- sprehod_po_ravnini_simetricen(1, 50)
 
 require(animation)
 ani.options(interval = .25)
