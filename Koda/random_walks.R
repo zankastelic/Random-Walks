@@ -519,7 +519,7 @@ fig = plot_ly(prostor_sprehod, x = ~x, y = ~y, z = ~z, type = 'scatter3d', mode 
               marker = list(size = 2, color = ~pot, colorscale = 'Viridis'))
 
 fig
-saveWidget(fig, "sprehod_v_prostoru.html")
+saveWidget(fig, "Slike_animacije/sprehod_v_prostoru.html")
 
 # kocka
 
