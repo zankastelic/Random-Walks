@@ -521,7 +521,7 @@ fig = plot_ly(prostor_sprehod, x = ~x, y = ~y, z = ~z, type = 'scatter3d', mode 
 fig
 saveWidget(fig, "Slike_animacije/sprehod_v_prostoru.html")
 
-# kocka
+####################################### kocka ################################
 
 # zaÄnemo v ogliÅ¡Äu A
 kocka <- graph(
@@ -605,7 +605,7 @@ sprehod_v_kocki <- function(){
   return(pot)
 }
 
-povpecen_cas_vrnitve <- function(st_simulacij){
+povpecen_cas_vrnitve_kocka <- function(st_simulacij){
   vsota <- 0 
   for (i in 1:st_simulacij){
     vsota <- vsota + (length(sprehod_v_kocki())-1)
@@ -655,7 +655,7 @@ obisci_vse_kocka <- function(){
   return(pot)
 }
 
-povpecen_cas_obiska <- function(st_simulacij){
+povpecen_cas_obiska_vseh_kocka <- function(st_simulacij){
   vsota <- 0 
   for (i in 1:st_simulacij){
     vsota <- vsota + (length(obisci_vse_kocka())-1)
@@ -664,4 +664,431 @@ povpecen_cas_obiska <- function(st_simulacij){
   return(rezultat)
 }
 
+
+## teserakt objekt z 16 oglišèi in 32 robovi 
+
+teserarkt <- graph(
+  c(1, 2, 2, 1, 
+    1, 4, 4, 1,
+    1, 5, 5, 1,
+    1, 13, 13, 1,
+    2, 3, 3, 2, 
+    2, 6, 6, 2, 
+    2, 14, 14, 2, 
+    3, 4, 4, 3, 
+    3, 7, 7, 3, 
+    3, 15, 15, 3, 
+    4, 8, 8, 4,
+    4, 16, 16, 4,
+    5, 6, 6, 5, 
+    5, 8, 8, 5, 
+    5, 9, 9, 5,
+    6, 7, 7, 6,
+    6, 10, 10, 6, 
+    7, 8, 8, 7,
+    8, 12, 12, 8,
+    9, 10, 10, 9,
+    9, 12, 12, 9,
+    9, 13, 13, 9,
+    10, 11, 11, 10, 
+    10, 14, 14, 10, 
+    11, 12, 12, 11, 
+    11, 15, 15, 11,
+    12, 16, 16, 12,
+    13, 14, 14, 13,
+    13, 16, 16, 13, 
+    14, 15, 15, 14,
+    15, 16, 16, 15
+  )
+)
+plot(teserarkt)
+
+sprehod_v_teserarkt <- function(){
+  pot <- c(1)
+  sosed <- c(2,4,5,13)
+  kam <- sample(sosed, 1)
+  pot <- c(pot,kam)
+  pot
+  while (kam != 1) {
+    if (kam == 2){
+      sosedi <- c(1,3,6,14)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 3){
+      sosedi <- c(2,4,7,15)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 4){
+      sosedi <- c(1,3,8,16)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 5){
+      sosedi <- c(1,6,8,9)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 6){
+      sosedi <- c(2,5,7,10)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 7){
+      sosedi <- c(3,6,8,11)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 8){
+      sosedi <- c(4,5,7,12)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 9){
+      sosedi <- c(5,10,12,13)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 10){
+      sosedi <- c(6,9,11,14)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 11){
+      sosedi <- c(7,10,12,15)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 12){
+      sosedi <- c(8,9,11,16)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 13){
+      sosedi <- c(1,9,14,16)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 14){
+      sosedi <- c(2,10,13,15)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 15){
+      sosedi <- c(3,11,14,16)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else {
+      sosedi <- c(4,12,13,15)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    }
+  }
+  return(pot)
+}
+
+povpecen_cas_vrnitve_tesarakt <- function(st_simulacij){
+  vsota <- 0 
+  for (i in 1:st_simulacij){
+    vsota <- vsota + (length(sprehod_v_teserarkt())-1)
+  }
+  rezultat <- vsota / st_simulacij
+  return(rezultat)
+}
+
+## povpreèen èas obiska vseh oglišè 
+
+obisci_vse_teserarkt <- function(){
+  pot <- c(1)
+  sosed <- c(2,4,5)
+  kam <- sample(sosed, 1)
+  pot <- c(pot,kam)
+  while (length(rle(sort(pot))$values) < 16) {
+    if (kam == 2){
+      sosedi <- c(1,3,6,14)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 3){
+      sosedi <- c(2,4,7,15)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 4){
+      sosedi <- c(1,3,8,16)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 5){
+      sosedi <- c(1,6,8,9)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 6){
+      sosedi <- c(2,5,7,10)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 7){
+      sosedi <- c(3,6,8,11)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 8){
+      sosedi <- c(4,5,7,12)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 9){
+      sosedi <- c(5,10,12,13)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 10){
+      sosedi <- c(6,9,11,14)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 11){
+      sosedi <- c(7,10,12,15)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 12){
+      sosedi <- c(8,9,11,16)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 13){
+      sosedi <- c(1,9,14,16)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 14){
+      sosedi <- c(2,10,13,15)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 15){
+      sosedi <- c(3,11,14,16)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else {
+      sosedi <- c(4,12,13,15)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    }
+  }
+  return(pot)
+}
+
+povpecen_cas_obiska_vseh_teserarkt <- function(st_simulacij){
+  vsota <- 0 
+  for (i in 1:st_simulacij){
+    vsota <- vsota + (length(obisci_vse_teserarkt())-1)
+  }
+  rezultat <- vsota / st_simulacij
+  return(rezultat)
+}
+
+############ piramida ##################
+
+########## 3 strana ####################
+piramida3 <- graph(
+  c(1, 2, 2, 1,
+    1, 3, 3, 1,
+    1, 4, 4, 1,
+    2, 3, 3, 2,
+    2, 4, 4, 2,
+    3, 4, 4, 3
+  )
+)
+plot(piramida3)
+
+
+sprehod_v_piramida3 <- function(){
+  pot <- c(1)
+  sosed <- c(2,3,4)
+  kam <- sample(sosed, 1)
+  pot <- c(pot,kam)
+  pot
+  while (kam != 1) {
+    if (kam == 2){
+      sosedi <- c(1,3,4)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 3){
+      sosedi <- c(1,2,4)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    }  else {
+      sosedi <- c(1,2,3)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    }
+  }
+  return(pot)
+}
+
+povpecen_cas_vrnitve_piramida3 <- function(st_simulacij){
+  vsota <- 0 
+  for (i in 1:st_simulacij){
+    vsota <- vsota + (length(sprehod_v_piramida3())-1)
+  }
+  rezultat <- vsota / st_simulacij
+  return(rezultat)
+}
+
+## povpreèen èas obiska vseh oglišè 
+
+obisci_vse_piramida3 <- function(){
+  pot <- c(1)
+  sosed <- c(2,3,4)
+  kam <- sample(sosed, 1)
+  pot <- c(pot,kam)
+  while (length(rle(sort(pot))$values) < 4) {
+    while (kam != 1) {
+      if (kam == 2){
+        sosedi <- c(1,3,4)
+        kam <- sample(sosedi, 1)
+        kam
+        pot <- c(pot,kam)
+      } else if (kam == 3){
+        sosedi <- c(1,2,4)
+        kam <- sample(sosedi, 1)
+        kam
+        pot <- c(pot,kam)
+      }  else {
+        sosedi <- c(1,2,3)
+        kam <- sample(sosedi, 1)
+        kam
+        pot <- c(pot,kam)
+      }
+  }
+  return(pot)
+  }
+}
+
+povpecen_cas_obiska_vseh_piramida3<- function(st_simulacij){
+  vsota <- 0 
+  for (i in 1:st_simulacij){
+    vsota <- vsota + (length(obisci_vse_piramida3())-1)
+  }
+  rezultat <- vsota / st_simulacij
+  return(rezultat)
+}
+########## 3 strana ####################
+
+########## 4 strana ####################
+
+piramida4 <- graph(
+  c(1, 2, 2, 1, 
+    1, 4, 4, 1,
+    1, 5, 5, 1,
+    2, 3, 3, 2,
+    2, 5, 5, 2,
+    3, 4, 4, 3, 
+    3, 5, 5, 3, 
+    4, 5, 5, 4
+    )
+)
+plot(piramida4)
+
+sprehod_v_piramida4 <- function(){
+  pot <- c(1)
+  sosed <- c(2,4,5)
+  kam <- sample(sosed, 1)
+  pot <- c(pot,kam)
+  pot
+  while (kam != 1) {
+    if (kam == 2){
+      sosedi <- c(1,3,5)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else if (kam == 3){
+      sosedi <- c(2,4,5)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } 
+    else if (kam == 4){
+      sosedi <- c(1,3,5)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    } else {
+      sosedi <- c(1,2,3,4)
+      kam <- sample(sosedi, 1)
+      kam
+      pot <- c(pot,kam)
+    }
+  }
+  return(pot)
+}
+
+povpecen_cas_vrnitve_piramida4 <- function(st_simulacij){
+  vsota <- 0 
+  for (i in 1:st_simulacij){
+    vsota <- vsota + (length(sprehod_v_piramida4())-1)
+  }
+  rezultat <- vsota / st_simulacij
+  return(rezultat)
+}
+
+## povpreèen èas obiska vseh oglišè 
+
+obisci_vse_piramida4 <- function(){
+  pot <- c(1)
+  sosed <- c(2,4,5)
+  kam <- sample(sosed, 1)
+  pot <- c(pot,kam)
+  while (length(rle(sort(pot))$values) < 5) {
+    while (kam != 1) {
+      if (kam == 2){
+        sosedi <- c(1,3,5)
+        kam <- sample(sosedi, 1)
+        kam
+        pot <- c(pot,kam)
+      } else if (kam == 3){
+        sosedi <- c(2,4,5)
+        kam <- sample(sosedi, 1)
+        kam
+        pot <- c(pot,kam)
+      } 
+      else if (kam == 4){
+        sosedi <- c(1,3,5)
+        kam <- sample(sosedi, 1)
+        kam
+        pot <- c(pot,kam)
+      } else {
+        sosedi <- c(1,2,3,4)
+        kam <- sample(sosedi, 1)
+        kam
+        pot <- c(pot,kam)
+      }
+    }
+    return(pot)
+  }
+}
+
+povpecen_cas_obiska_vseh_piramida4 <- function(st_simulacij){
+  vsota <- 0 
+  for (i in 1:st_simulacij){
+    vsota <- vsota + (length(obisci_vse_piramida4())-1)
+  }
+  rezultat <- vsota / st_simulacij
+  return(rezultat)
+}
+
+
+########## 4 strana ####################
 
