@@ -114,7 +114,7 @@ seznam1[[1]]
 length(seznam1[[1]])
 spodnja_meja <- -25
 zgornja_meja <- 25
-N <- 10
+N <- 1000
 ```
 
 S grafa razberemo, da smo prej dosegli spodnjo mejo in da smo za to potrebovali `r length(seznam1[[1]])` korakov. Simulirajmo sedaj `r N` sprehodov z zgornjo mejo `r zgornja_meja` in spodnjo mejo `r spodnja_meja`.
@@ -139,7 +139,7 @@ p = 0.50
 spodnja_meja <- -25
 zgornja_meja <- 25
 a <- sim_sprehod(p,spodnja_meja,zgornja_meja)
-N <- 10
+N <- 10000
 seznam <- replicate(N, sim_sprehod(p, spodnja_meja, zgornja_meja))
 max_length <- max(sapply(seznam, length))
 # make plot
@@ -182,6 +182,7 @@ for (i in seq(3, length(seznam), by = 3)) {
   p <- verjetnost_da_prej_dosezemo_zgornjo_mejo(b)
   y <- c(y,p)
 }
+y[length(y)]
 vrednosti_verjetnosti <- data.frame(x,y)
 plot(x,y,
      type="l", lwd=1, xlab="Število simulacij", ylab="Verjetnost")
@@ -189,7 +190,7 @@ abline(h = abs(spodnja_meja)/(abs(spodnja_meja)+zgornja_meja), lty = "dashed")
 ```
 
 
-S 'pomočjo' grafa se lahko prepričamo, da zgornja formula $P(S_t = b)$ drži. Če je $p =\frac{1}{2}, -a = -25, b=25$ je verjetnost enaka $0.5$. Simulirana vrednost pa znaša $0.5063$. 
+S 'pomočjo' grafa se lahko prepričamo, da zgornja formula $P(S_t = b)$ drži. Če je $p =\frac{1}{2}, -a = -25, b=25$ je verjetnost enaka $0.5$. Simulirana vrednost pa znaša `r y[length(y)]`. 
 
 
 Poglejmo si še primer, ko sta $a$ in $b$ različna. Naj bo $-a=-17$ in $b=24$.  
@@ -202,7 +203,7 @@ p = 0.50
 spodnja_meja1 <- -17
 zgornja_meja1 <- 24
 a <- sim_sprehod(p,spodnja_meja1,zgornja_meja1)
-M <- 10
+M <- 10000
 seznam1 <- replicate(M, sim_sprehod(p, spodnja_meja1, zgornja_meja1))
 max_length1 <- max(sapply(seznam1, length))
 # make plot
@@ -253,7 +254,7 @@ p2 = 0.75
 spodnja_meja2 <- -4
 zgornja_meja2 <- 36
 a <- sim_sprehod(p2,spodnja_meja2,zgornja_meja2)
-O <- 100
+O <- 10000
 seznam2 <- replicate(O, sim_sprehod(p2, spodnja_meja2, zgornja_meja2))
 max_length2 <- max(sapply(seznam2, length))
 # make plot
@@ -269,7 +270,7 @@ abline(h = zgornja_meja2, lwd = 2)
 
 ```
 
-V konkretnem primeru je bila zgornja meja dosežena kar 9875-krat (PREVERI). Kolikokrat in v koliko korakih je bila meja dosežena, si bomo pogledali v naslednjem razdelku. Poglejmo si še verjetnost, da pri danem $p$-ju prej dosežemo zgornjo mejo. Formula nam da
+Kolikokrat in v koliko korakih je bila meja dosežena, si bomo pogledali v naslednjem razdelku. Poglejmo si še verjetnost, da pri danem $p$-ju prej dosežemo zgornjo mejo. Formula nam da
 \[
 \frac{1-(\frac{q}{p})^a}{1-(\frac{q}{p})^{a+b}}=\frac{1-(\frac{0.25}{0.75})^4}{1-(\frac{0.25}{0.75})^{4+36}}=\frac{80}{81} \approx 0.98765.
 \]
@@ -277,26 +278,48 @@ V konkretnem primeru je bila zgornja meja dosežena kar 9875-krat (PREVERI). Kol
 
 
 ```{r, echo=FALSE}
-#verjetnost_da_prej_dosezemo_zgornjo_mejo(seznam2)
+prestej <- function(seznam_ne_sim, spodnja_meja_ne_sim, zgornja_meja_ne_sim){
+  # je šel zgoraj in kok korakov je rabu
+  zgoraj <- c()
+  # je šel spodaj in kok korakov je rabu
+  spodaj <- c()
+  for (i in seq(1, length(seznam_ne_sim), by = 3)){
+    pot <- seznam_ne_sim[[i]]
+    pot
+    stevilo_korakov <- abs(seznam_ne_sim[[i+1]])+ abs(seznam_ne_sim[[i+2]])
+    stevilo_korakov
+    if (pot[length(pot)]==zgornja_meja_ne_sim){
+      zgoraj <- c(zgoraj,stevilo_korakov)
+      zgoraj
+    } else {
+      spodaj <- c(spodaj,stevilo_korakov)
+      spodaj
+    }
+  }
+  vrednosti <- list(spodaj, zgoraj)
+  return(vrednosti)
+}
+
+verjetnost_da_prej_dosezemo_zgornjo_mejo(seznam2)
 #narišimo verjetnost 
 
 # stevilo simulacij: 
-#x <- c(1:O)
-#y <- c()
-#for (i in seq(3, length(seznam2), by = 3)) {
-#  b <- seznam[1:i]
-#  p <- verjetnost_da_prej_dosezemo_zgornjo_mejo(b)
-#  y <- c(y,p)
-#}
-#vrednosti_verjetnosti <- data.frame(x,y)
-#plot(x,y,
-#     type="l", lwd=1, xlab="Število simulacij", ylab="Verjetnost")
-#abline(h = abs(spodnja_meja2)/(abs(spodnja_meja2)+zgornja_meja2), lty = "dashed")
-#
-#stevilo_korakov_sim <- prestej(seznam2, spodnja_meja2, zgornja_meja2)
+x <- c(1:O)
+y <- c()
+for (i in seq(3, length(seznam2), by = 3)) {
+  b <- seznam2[1:i]
+  p <- verjetnost_da_prej_dosezemo_zgornjo_mejo(b)
+  y <- c(y,p)
+}
+vrednosti_verjetnosti <- data.frame(x,y)
+plot(x,y,
+     type="l", lwd=1, xlab="Število simulacij", ylab="Verjetnost")
+abline(h = abs(spodnja_meja2)/(abs(spodnja_meja2)+zgornja_meja2), lty = "dashed")
+
+stevilo_korakov_sim <- prestej(seznam2, spodnja_meja2, zgornja_meja2)
 ```
 
-S pomočjo simulacije dobimo $0.9875$ kar je zelo dober približek. Iz vseh grafikonov je več kot očitno, da je stanje $0$ povrnljivo - prav tako so vsa stanja povrnljiva. 
+S pomočjo simulacije dobimo `r y[length(y)]` kar je zelo dober približek. Iz vseh grafikonov je več kot očitno, da je stanje $0$ povrnljivo - prav tako so vsa stanja povrnljiva. 
 
 # 3. Pričakovano število korakov zadetja meje
 
@@ -424,7 +447,6 @@ sprehod_po_ravnini_simetricen <- function(stevilo_sprehodov, stevilo_korakov){
 sprehod_v_ravnini <- sprehod_po_ravnini_simetricen(1, 100)
 p <- ggplot(sprehod_v_ravnini, aes(x = x, y = y, colour = pot))
 p <- p + geom_path()
-p
 
 ravnina_sprehod <- sprehod_po_ravnini_simetricen(1, 25)
 
@@ -659,8 +681,6 @@ fig = plot_ly(prostor_sprehod, x = ~x, y = ~y, z = ~z, type = 'scatter3d', mode 
               marker = list(size = 2, color = ~pot, colorscale = 'Viridis'))
 
 fig
-
-
 ```
 </center>
 ## 6.2 Nesimetrični sprehod
@@ -762,7 +782,7 @@ pricakovano_st_kor_vrnitve <- c(6.8,11.2,8.8,6.7,7.6,7.68,8.024,7.918,8.0252)
 df1 <- data.frame(stevilo_simulacij, pricakovano_st_kor_vrnitve)
 
 df1 %>%
-  kbl() %>%
+  kbl() %>% 
   kable_styling()
 ```
 
@@ -801,7 +821,6 @@ sprehod_v_teserarkt <- function(){
   sosed <- c(2,4,5,13)
   kam <- sample(sosed, 1)
   pot <- c(pot,kam)
-  pot
   while (kam != 1) {
     if (kam == 2){
       sosedi <- c(1,3,6,14)
@@ -1291,23 +1310,57 @@ Najprej jih definirajmo oz poglejmo kako izgledajo:
 </center>
 Pogledali si bomo čas vrnitve in čas pokritja. 
 ```{r, echo=FALSE}
+set.seed(77)
 generator_sosedov <- function(stevilo_tock){
+  n <- stevilo_tock/2
   tocke <- seq(1:stevilo_tock)
   sosedi <- matrix(0, stevilo_tock, stevilo_tock)
-  for (i in 1:(length(tocke)-1)) {
-    sosedi[i,i+1] <- 1
-  }
-  for (i in 1:(length(tocke)-1)) {
-    sosedi[i+1,i] <- 1
-  }
-  for (i in 1:(stevilo_tock/2)) {
-     sosedi[i,i+stevilo_tock/2] <- 1
-  }
-  for (i in 1:(stevilo_tock/2)) {
-     sosedi[i+stevilo_tock/2,i] <- 1
+  if (stevilo_tock == 2) {
+    for (i in 1:(length(tocke)-1)) {
+      sosedi[i,i+1] <- 1
+    }
+    for (i in 1:(length(tocke)-1)) {
+      sosedi[i+1,i] <- 1
+    }
+    for (i in 1:(stevilo_tock/2)) {
+      sosedi[i,i+stevilo_tock/2] <- 1
+    }
+    for (i in 1:(stevilo_tock/2)) {
+      sosedi[i+stevilo_tock/2,i] <- 1
+    }
+  } else if (stevilo_tock == 4) {
+    sosedi[1,2] <- 1
+    sosedi[1,3] <- 1
+    sosedi[2,1] <- 1
+    sosedi[2,4] <- 1
+    sosedi[3,1] <- 1
+    sosedi[3,4] <- 1
+    sosedi[4,2] <- 1
+    sosedi[4,3] <- 1
+  } else {
+    robovi <- c(1,stevilo_tock/2, stevilo_tock/2 + 1, stevilo_tock)
+    sosedi[1,2] <- 1
+    sosedi[1,stevilo_tock/2 + 1] <- 1
+    sosedi[stevilo_tock/2,stevilo_tock/2-1] <- 1
+    sosedi[stevilo_tock/2,stevilo_tock] <- 1
+    sosedi[stevilo_tock/2+1,1] <- 1
+    sosedi[stevilo_tock/2+1,stevilo_tock/2+2] <- 1
+    sosedi[stevilo_tock,stevilo_tock/2] <- 1
+    sosedi[stevilo_tock,stevilo_tock-1] <- 1
+    notranje <- which(!(tocke %in% robovi))
+    for (i in notranje){
+      sosedi[i,i-1] <- 1
+      sosedi[i,i+1] <- 1
+      if (i < stevilo_tock/2){
+        sosedi[i,i+n] <- 1 
+      } else {
+        sosedi[i,i-n] <- 1 
+      }
+    }
   }
   return(sosedi)
 }
+
 
 cas_vrnitve_ladder_graf <- function(n){
   d <- 2
@@ -1315,42 +1368,254 @@ cas_vrnitve_ladder_graf <- function(n){
   sosedi <- generator_sosedov(stevilo_tock)
   # zacnemo v 1 
   pot <- c(1)
-  kam <- sample(which(sosedi[1,] %in% 1),1)
-  pot <- c(pot,kam)
-  while (kam != 1) {
-    kam <- sample(which(sosedi[kam,] %in% 1),1)
+  a <- which(sosedi[1,] %in% 1)
+  if (n == 1) {
+    return (2)
+  } else {
+  # vedno bosta 2
+    kam <- ifelse(runif(1) < 0.5, a[1], a[2])
     pot <- c(pot,kam)
+    while (kam != 1) {
+      kam <- sample(which(sosedi[kam,] %in% 1),1)
+      pot <- c(pot,kam)
+    }
+    # return(pot) - to ti vrne pot 
+    return(length(pot)-1)
   }
-  # return(pot) - to ti vrne pot 
-  return(length(pot)-1)
 }
+
+cas_pokritja_ladder_graf <- function(n){
+  d <- 2
+  stevilo_tock <- n*d 
+  stevilo_tock
+  sosedi <- generator_sosedov(stevilo_tock)
+  sosedi
+  # zacnemo v 1 
+  pot <- c(1)
+  pot
+  a <- which(sosedi[1,] %in% 1)
+  a
+  if (n == 1) {
+    return (1)
+  } else {
+  # vedno bosta 2
+    kam <- ifelse(runif(1) < 0.5, a[1], a[2])
+    kam
+    pot <- c(pot,kam)
+    pot
+    while (length(rle(sort(pot))$values) < stevilo_tock) {
+      kam <- sample(which(sosedi[kam,] %in% 1),1)
+      kam
+      pot <- c(pot,kam)
+      pot
+    }
+    pot
+    # return(pot) - to ti vrne pot 
+    return(length(pot)-1)
+  }
+}
+
 stevilo_n <- c(1,2,3,4,5,6)
 stevilo_simulacij <- c(10000,10000,10000,10000,10000,10000)
 
-cas_vrnitve_ladder <- c()
-izracunaj_za_vec <- function(stevilo_n,stevilo_simulacij){
-  vsota <- 0
-  for (j in stevilo_n){
-    for (i in 1:stevilo_simulacij){
-      qwer <- cas_vrnitve_ladder_graf(j)
-      vsota <- vsota + qwer
+izracunaj_povprecje <- function(stevilo_n, stevilo_simulacij){
+  cas_vrnitve_ladder <- c()
+  vsota <- 0 
+  for (i in stevilo_n) {
+    for (j in 1:stevilo_simulacij) {
+      vsota <- vsota + cas_vrnitve_ladder_graf(i)
     }
-    vsota <- vsota / stevilo_simulacij
-    cas_vrnitve_ladder <- append(cas_vrnitve_ladder,vsota)
+    povp <- vsota / stevilo_simulacij
+    cas_vrnitve_ladder <- append(cas_vrnitve_ladder, povp)
   }
   return(cas_vrnitve_ladder)
 }
 
+izracunaj_povprecje_zadetja <- function(stevilo_n, stevilo_simulacij){
+  cas_vrnitve_ladder_zadetja <- c()
+  vsota <- 0 
+  for (i in stevilo_n) {
+    for (j in 1:stevilo_simulacij) {
+      vsota <- vsota + cas_pokritja_ladder_graf(i)
+    }
+    povp <- vsota / stevilo_simulacij
+    cas_vrnitve_ladder_zadetja <- append(cas_vrnitve_ladder_zadetja, povp)
+  }
+  return(cas_vrnitve_ladder_zadetja)
+}
 #mogoče mal traja
-cas_vrnitve_ladder <- izracunaj_za_vec(stevilo_n,10000)
-
-df9 <- data.frame(stevilo_n, stevilo_simulacij, cas_vrnitve_ladder)
+stevilo_n <- c(1,2,3,4,5,6)
+stevilo_simulacij <- c(10000,10000,10000,10000,10000,10000)
+pricakovan_cas_vrnitve <- izracunaj_povprecje(stevilo_n,10000)
+cas_vrnitve_ladder_pokritja <- izracunaj_povprecje_zadetja(stevilo_n,10000)
+df9 <- data.frame(stevilo_n, stevilo_simulacij, pricakovan_cas_vrnitve,cas_vrnitve_ladder_pokritja)
 
 df9 %>%
   kbl() %>%
   kable_styling()
-
-
-cas_pokritja_ladder <- c()
 ```
-Zgoraj vidimo tabelo pričakovanih časov vrnitve lestvenih grafov za $n=1,2,3,4,5,6$. Če je $n=2$ je lestveni graf enak kvadratu. V tem primeru smo privzeli, da začnemo v enem izmed oglišč, ki ima $2$ soseda in ne v enem izmed notranjih, ki ima $3$ sosede
+Zgoraj vidimo tabelo pričakovanih časov vrnitve lestvenih grafov za $n=1,2,3,4,5,6$. Če je $n=2$ je lestveni graf enak kvadratu. V tem primeru smo privzeli, da začnemo v enem izmed oglišč, ki ima $2$ soseda in ne v enem izmed notranjih, ki ima $3$ sosede. Za kvadrat lahko rečemo, da je pričakovan čas vrnitve v izhodišče po 4 korakih, čas pokritja vseh oglišč pa 7 korakov. 
+
+
+# 9. d-regular tree with depth t 
+
+Predstavimo najprej kako izgledajo d-regularna drevesa z globino t. 
+<center>
+![Predstavitev lestvenih grafov.](dregulartree.png)
+</center>
+```{r, echo=FALSE}
+prezrcali <- function(sosedi){
+  for (i in 1:(nrow(sosedi)-1)){
+    for (j in 2:ncol(sosedi)) {
+    if (sosedi[i,j] == 1){
+      sosedi[j,i] <- 1
+      } 
+    }
+  } 
+  return(sosedi)
+}
+
+d_regular_t_tree <- function(d,t){
+  stevilo_tock <- 1
+  for (i in 1:t){
+    stevilo_tock <- stevilo_tock + d^i
+  } 
+  if (d == 1){
+    sosedi <- matrix(0, stevilo_tock, stevilo_tock)
+    sosedi
+    for (i in 1:(ncol(sosedi)-1)){
+      sosedi[i,i+1] <- 1
+      sosedi[i+1,i] <- 1
+    }
+    zrcaljena <- sosedi
+  } else  {
+    do_kam <- 1
+    for (i in 1:(t-1)){
+      do_kam <- do_kam + d^i
+    }
+    do_kam
+    sosedi <- matrix(0, stevilo_tock, stevilo_tock)
+    for (j in 2:(d+1)) {
+      sosedi[1,j] <- 1
+    }
+    sosedi
+    for (i in 2:do_kam){
+      a <- which(sosedi[i-1,] %in% 1)
+      b <- a[1] + d
+      for (j in b:(b+d-1)){
+        sosedi[i,j] <- 1
+        }
+    }
+    zrcaljena <- prezrcali(sosedi)
+  }
+  return(zrcaljena)
+}
+
+sampleWithoutSurprises <- function(x) {
+  if (length(x) <= 1) {
+    return(x)
+  } else {
+    return(sample(x,1))
+  }
+}
+
+cas_vrnitve_d_tree_t <- function(matrika){
+  # zacnemo v 1 
+  pot <- c(1)
+  pot
+  a <- which(matrika[1,] %in% 1)
+  a
+  # vedno bosta 2
+  kam <- sampleWithoutSurprises(a)
+  kam
+  pot <- c(pot,kam)
+  pot
+  while (kam != 1) {
+    qw <- which(matrika[kam,] %in% 1)
+    qw
+    kam <- sampleWithoutSurprises(qw)
+    kam
+    pot <- c(pot,kam)
+    pot
+ 
+  #return(length(pot)-1)
+  }
+  return(length(pot)-1)
+}
+
+d <- c(1,2,3,4)
+t <- c(1,2,3,4)
+
+mat <- matrix(0,4,4)
+
+vsota <- 0
+for (i in 1:1000) {
+  a <- d_regular_t_tree(2,2)
+  ses <- cas_vrnitve_d_tree_t(a)
+  vsota <- vsota + ses
+}
+vsota <- vsota / 1000
+mat[4,4] <- vsota
+
+t_1 <- c(2,0,0,0)
+t_2 <- c(3.900, 5.986, 7.920, 9.596)
+t_3 <- c(5.866, 13.618, 24.450, 42.324)
+t_4 <- c(8.538, 27.054, 81.240, 161.326)
+
+df10 <- data.frame(t_1,t_2,t_3,t_4)
+
+df10 %>%
+  kbl() %>%
+  kable_styling()
+```
+
+Poglejmo si še pričakovani čas pokritja. 
+```{r, echo=FALSE}
+cas_pokritja_d_tree_t <- function(sosedi){
+  # zacnemo v 1 
+  pot <- c(1)
+  pot
+  a <- which(sosedi[1,] %in% 1)
+  a
+  stevilo_tock <- nrow(sosedi)
+  if (length(sosedi) == 4) {
+    return (1)
+  } else {
+    # vedno bosta 2
+    kam <- sampleWithoutSurprises(a)
+    kam
+    pot <- c(pot,kam)
+    pot
+    while (length(rle(sort(pot))$values) < stevilo_tock) {
+      kam <- sample(which(sosedi[kam,] %in% 1),1)
+      kam
+      pot <- c(pot,kam)
+      pot
+    }
+    # return(pot) - to ti vrne pot 
+    return(length(pot)-1)
+  }
+}
+
+#mat <- matrix(0,4,4)
+#vsota <- 0
+#a <- d_regular_t_tree(4,4)
+#for (i in 1:1000) {
+#  ses <- cas_pokritja_d_tree_t(a)
+#  vsota <- vsota + ses
+#  print(i)
+#}
+#vsota <- vsota / 1000
+#mat[4,4] <- vsota
+#mat
+
+t_1 <- c(1,0,0,0)
+t_2 <- c(4.879, 62.303, 93.74, 223.4469)
+t_3 <- c(10.819, 116.751, 501.028, 1437.057)
+t_4 <- c(18.863, 359.235, 2244.862, 8046.736)
+
+df11 <- data.frame(t_1,t_2,t_3,t_4)
+df11 %>%
+  kbl() %>%
+  kable_styling()
+```
