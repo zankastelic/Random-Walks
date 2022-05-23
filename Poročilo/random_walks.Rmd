@@ -1,7 +1,7 @@
 ---
 title: "Random_walks"
 author: "Zan Kastelic"
-date: "6 3 2022"
+date: "1 6 2022"
 output:
   html_document: default
   pdf_document: default
@@ -75,6 +75,7 @@ Poglejmo si najprej eno simulacijo simetričnega naključnega sprehoda, torej $p
 
 
 ```{r, echo=FALSE, fig.align="center"}
+set.seed(77)
 sim_sprehod <- function(p, spodnja_meja, zgornja_meja){
   vektor_vrednosti <- c(0)
   vsota <- 0
@@ -171,7 +172,6 @@ verjetnost_da_prej_dosezemo_zgornjo_mejo <- function(seznam){
   iskana_verjetnost <- koncal_zgoraj / stevilo_sprehodov
   return(iskana_verjetnost)
 }
-verjetnost_da_prej_dosezemo_zgornjo_mejo(seznam)
 #narišimo verjetnost 
 
 # stevilo simulacij: 
@@ -248,26 +248,46 @@ Sem spadajo vsi naključni sprehodi katerih $p$ je različen od $\frac{1}{2}$.
 Poglejmo si simulacijo $10.000$ naključnih sprehodov, kjer je $p=\frac{3}{4}$. Za spodnjo mejo vzemimo $-4$, za zgornjo pa $36$.
 
 ```{r, echo=FALSE, fig.align="center"}
-vektor_vrednosti <- c(0)
-vsota <- 0
-p2 = 0.75
-spodnja_meja2 <- -4
-zgornja_meja2 <- 36
-a <- sim_sprehod(p2,spodnja_meja2,zgornja_meja2)
-O <- 10000
-seznam2 <- replicate(O, sim_sprehod(p2, spodnja_meja2, zgornja_meja2))
-max_length2 <- max(sapply(seznam2, length))
+nesim_sprehod <- function(p_gor, spodnja_meja, zgornja_meja){
+  vektor_vrednosti <- c(0)
+  vsota <- 0
+  spodaj <- 0 
+  zgoraj <- 0
+  while (vsota > spodnja_meja & vsota < zgornja_meja){
+    #  ifelse(test, yes, no)
+    a <- ifelse(runif(1) < p_gor, 1, -1)
+    vsota <- vsota + a
+    vektor_vrednosti <- c(vektor_vrednosti, vsota)
+    if (a == -1){
+      spodaj <- spodaj + a
+    } else {
+      zgoraj <- zgoraj + a
+    }
+  }
+  vrednosti <- list(vektor_vrednosti, spodaj, zgoraj)
+  return(vrednosti)
+}
+
+vektor_vrednosti_ne_sim <- c(0)
+vsota_ne_sim <- 0
+p_gor = 0.75
+spodnja_meja_ne_sim <- -4
+zgornja_meja_ne_sim <- 36
+a <- nesim_sprehod(p_gor,spodnja_meja_ne_sim,zgornja_meja_ne_sim)
+N <- 10000
+set.seed(53)
+seznam_ne_sim <- replicate(N, nesim_sprehod(p_gor,spodnja_meja_ne_sim,zgornja_meja_ne_sim))
+max_length <- max(sapply(seznam_ne_sim, length))
 # make plot
-plot(c(1, max_length2), c(spodnja_meja2, zgornja_meja2), type = "n",
+plot(c(1, max_length), c(spodnja_meja_ne_sim, zgornja_meja_ne_sim), type = "n",
      main="Random walks", xlab="cas oz. stevilo korakov", ylab="vrednost")
-for (i in 1:O) {
-  lines(1:length(seznam2[[i]]), seznam2[[i]],
-        col = colorPicker(seznam2[[i]], max_length2), lwd = 0.5)
+for (i in 1:N) {
+  lines(1:length(seznam_ne_sim[[i]]), seznam_ne_sim[[i]],
+        col = colorPicker(seznam_ne_sim[[i]], max_length), lwd = 0.5)
 }
 abline(h = 0, lty = "dashed")
-abline(h = spodnja_meja2, lwd = 2)
-abline(h = zgornja_meja2, lwd = 2)
-
+abline(h = spodnja_meja_ne_sim, lwd = 2)
+abline(h = zgornja_meja_ne_sim, lwd = 2)
 ```
 
 Kolikokrat in v koliko korakih je bila meja dosežena, si bomo pogledali v naslednjem razdelku. Poglejmo si še verjetnost, da pri danem $p$-ju prej dosežemo zgornjo mejo. Formula nam da
@@ -300,23 +320,48 @@ prestej <- function(seznam_ne_sim, spodnja_meja_ne_sim, zgornja_meja_ne_sim){
   return(vrednosti)
 }
 
-verjetnost_da_prej_dosezemo_zgornjo_mejo(seznam2)
+verjetnost_da_prej_dosezemo_zgornjo_mejo(seznam_ne_sim)
+
 #narišimo verjetnost 
 
+
+kolikokrat_dosezemo_zgornjo_mejo <- function(seznam_ne_sim, spodnja_meja_ne_sim, zgornja_meja_ne_sim){
+  dosezena_zgornja <- 0
+  for (i in seq(1, length(seznam_ne_sim), by = 3)){
+    a <- length(seznam_ne_sim[[i]])
+    b <- seznam_ne_sim[[i]]
+    c <- b[a]
+    if (c == zgornja_meja_ne_sim){
+      dosezena_zgornja <- dosezena_zgornja +1
+    }
+  }
+  return(dosezena_zgornja)
+}
+
+kolikokrat_dosezemo_zgornjo_mejo(seznam_ne_sim, spodnja_meja_ne_sim, zgornja_meja_ne_sim)
+
+
+stevilo_korakov_ne_sim <- prestej(seznam_ne_sim, spodnja_meja_ne_sim, zgornja_meja_ne_sim)
+
+#ttt_ne_sim <- table(stevilo_korakov_ne_sim[[1]])
+#tttt_ne_sim <- table(stevilo_korakov_ne_sim[[2]])
+#View(ttt_ne_sim)
+#View(tttt_ne_sim)
+
 # stevilo simulacij: 
-x <- c(1:O)
+x <- c(1:N)
 y <- c()
-for (i in seq(3, length(seznam2), by = 3)) {
-  b <- seznam2[1:i]
+for (i in seq(3, length(seznam_ne_sim), by = 3)) {
+  b <- seznam_ne_sim[1:i]
   p <- verjetnost_da_prej_dosezemo_zgornjo_mejo(b)
   y <- c(y,p)
 }
-vrednosti_verjetnosti <- data.frame(x,y)
 plot(x,y,
      type="l", lwd=1, xlab="Število simulacij", ylab="Verjetnost")
-abline(h = abs(spodnja_meja2)/(abs(spodnja_meja2)+zgornja_meja2), lty = "dashed")
+abline(h = (1-((1-p_gor)/(p_gor))^(abs(spodnja_meja_ne_sim)))/(1-((1-p_gor)/(p_gor))^(abs(spodnja_meja_ne_sim)+zgornja_meja_ne_sim)), 
+       lty = "dashed")
 
-stevilo_korakov_sim <- prestej(seznam2, spodnja_meja2, zgornja_meja2)
+
 ```
 
 S pomočjo simulacije dobimo `r y[length(y)]` kar je zelo dober približek. Iz vseh grafikonov je več kot očitno, da je stanje $0$ povrnljivo - prav tako so vsa stanja povrnljiva. 
@@ -389,78 +434,78 @@ Simetričen sprehod v ravnini se začne v točki $(0,0)$ in gre z verjetnostjo $
 <center>
 
 ```{r, echo=FALSE}
-sprehod_po_ravnini_simetricen <- function(stevilo_sprehodov, stevilo_korakov){
-  require(ggplot2)
-  polozaj <- matrix(ncol = 2)
-  polozaj
-  for (x in 1:stevilo_sprehodov) {
-    x
-    i <- 1
-    sprehajalec <- matrix(c(0,0), nrow = stevilo_korakov+1, ncol = 2, byrow = T)
-    sprehajalec
-    while(i  <= stevilo_korakov){
-      # odlocmo se najprej, a gremo levo/desno/gor/dol
-      # 1 - levo 
-      # 2 - desno
-      # 3 - dol 
-      # 4 - gor
-      smeri <- c(1,2,3,4)
-      kam <- sample(smeri, 1)
-      kam # pobriši
-      # ?e je 0 se spreminja x os:
-      sprehajalec[i+1,1] <- sprehajalec[i,1] #treba je nastavit na enga vnaprej 
-      sprehajalec[i+1,2] <- sprehajalec[i,2] #treba je nastavit na enga vnaprej
-      #sprehajalec[i,3] <- x
-      sprehajalec
-      if (kam == 1){
-        sprehajalec[i+1,1] <- sprehajalec[i,1] - 1
-        i = i + 1
-      } else if (kam == 2){
-        sprehajalec[i+1,1] <- sprehajalec[i,1] + 1
-        i = i + 1
-      } else if (kam == 3){
-        sprehajalec[i+1,2] <- sprehajalec[i,2] - 1
-        i = i + 1
-      } else if (kam == 4){
-        sprehajalec[i+1,2] <- sprehajalec[i,2] + 1
-        i = i + 1
-      }
-    }
-    sprehajalec
-    polozaj <- rbind(polozaj, sprehajalec)
-    #polozaj[length(polozaj)/3,3] <- x
-    polozaj
-    x = x + 1
-    x
-  }
-  v <- c(0)
-  for (x in 1:stevilo_sprehodov){
-    v <- c(v,rep(x,stevilo_korakov+1))
-  }
-  v <- v[2:length(v)]
-  colnames(polozaj) <- c("x" , "y") # imena stolpcev 
-  polozaj <- as.data.frame(polozaj)
-  polozaj <- polozaj[2:nrow(polozaj),]
-  polozaj <- cbind(polozaj,pot = factor(v))
-  return(polozaj)
-}
-sprehod_v_ravnini <- sprehod_po_ravnini_simetricen(1, 100)
-p <- ggplot(sprehod_v_ravnini, aes(x = x, y = y, colour = pot))
-p <- p + geom_path()
-
-ravnina_sprehod <- sprehod_po_ravnini_simetricen(1, 25)
-
-require(animation)
-ani.options(interval = .25)
-saveGIF(
-  {for(i in seq(2,25,1)){
-    gp <- ggplot(ravnina_sprehod, aes(x=x, y=y, col = pot)) + geom_path(alpha = .5)
-    gp <- gp + geom_point(x=ravnina_sprehod[i,1], y=ravnina_sprehod[i,2], col = "red")
-    print(gp)
-  }},
-  movie.name = "ravnina_sprehod.gif", interval = .25, nmax =25, ani.width = 600, ani.height = 600,
-  outdir = getwd()
-)
+#sprehod_po_ravnini_simetricen <- function(stevilo_sprehodov, stevilo_korakov){
+#  require(ggplot2)
+#  polozaj <- matrix(ncol = 2)
+#  polozaj
+#  for (x in 1:stevilo_sprehodov) {
+#    x
+#    i <- 1
+#    sprehajalec <- matrix(c(0,0), nrow = stevilo_korakov+1, ncol = 2, byrow = T)
+#    sprehajalec
+#    while(i  <= stevilo_korakov){
+#      # odlocmo se najprej, a gremo levo/desno/gor/dol
+#      # 1 - levo 
+#      # 2 - desno
+#      # 3 - dol 
+#      # 4 - gor
+#      smeri <- c(1,2,3,4)
+#      kam <- sample(smeri, 1)
+#      kam # pobriši
+#      # ?e je 0 se spreminja x os:
+#      sprehajalec[i+1,1] <- sprehajalec[i,1] #treba je nastavit na enga vnaprej 
+#      sprehajalec[i+1,2] <- sprehajalec[i,2] #treba je nastavit na enga vnaprej
+#      #sprehajalec[i,3] <- x
+#      sprehajalec
+#      if (kam == 1){
+#        sprehajalec[i+1,1] <- sprehajalec[i,1] - 1
+#        i = i + 1
+#      } else if (kam == 2){
+#        sprehajalec[i+1,1] <- sprehajalec[i,1] + 1
+#        i = i + 1
+#      } else if (kam == 3){
+#        sprehajalec[i+1,2] <- sprehajalec[i,2] - 1
+#        i = i + 1
+#      } else if (kam == 4){
+#        sprehajalec[i+1,2] <- sprehajalec[i,2] + 1
+#        i = i + 1
+#      }
+#    }
+#    sprehajalec
+#    polozaj <- rbind(polozaj, sprehajalec)
+#    #polozaj[length(polozaj)/3,3] <- x
+#    polozaj
+#    x = x + 1
+#    x
+#  }
+#  v <- c(0)
+#  for (x in 1:stevilo_sprehodov){
+#    v <- c(v,rep(x,stevilo_korakov+1))
+#  }
+#  v <- v[2:length(v)]
+#  colnames(polozaj) <- c("x" , "y") # imena stolpcev 
+#  polozaj <- as.data.frame(polozaj)
+#  polozaj <- polozaj[2:nrow(polozaj),]
+#  polozaj <- cbind(polozaj,pot = factor(v))
+#  return(polozaj)
+#}
+#sprehod_v_ravnini <- sprehod_po_ravnini_simetricen(1, 100)
+#p <- ggplot(sprehod_v_ravnini, aes(x = x, y = y, colour = pot))
+#p <- p + geom_path()
+#
+#ravnina_sprehod <- sprehod_po_ravnini_simetricen(1, 25)
+#
+#require(animation)
+#ani.options(interval = .25)
+#saveGIF(
+#  {for(i in seq(2,25,1)){
+#    gp <- ggplot(ravnina_sprehod, aes(x=x, y=y, col = pot)) + geom_path(alpha = .5)
+#    gp <- gp + geom_point(x=ravnina_sprehod[i,1], y=ravnina_sprehod[i,2], col = "red")
+##    print(gp)
+#  }},
+#  movie.name = "ravnina_sprehod.gif", interval = .25, nmax =25, ani.width = 600, ani.height = 600,
+#  outdir = getwd()
+#)
 # to sm pol na internet uploadu, drgać nism znou dt notr
 ```
 
@@ -616,7 +661,7 @@ p
 ```
 </center>
 
-Nesimetričen sprehod je simuliran tako, da si izberemo parametra p_gor in p_desno. V tem primeru smo indiferentni medtem ali gremo desno/levo ali gor/dol. Kakšne obravnave in analize so za nesimetrične sprehode nesmiselne.
+Nesimetričen sprehod je simuliran tako, da si izberemo parametra p_gor (`r p_gor`) in p_desno (`r p_desno`). V tem primeru smo indiferentni medtem ali gremo desno/levo ali gor/dol. Kakšne podrobnejše obravnave in analize so za nesimetrične sprehode nesmiselne.
 
 # 6. Naključni sprehod v prostoru s celimi števili
 Iz verjetnosti vemo, da so stanja naključnega simetričnega sprehoda v prostoru minljiva. Enako velja za nesimetrične naključne sprehode. Izkaže se, da so vsa stanja, pa naj bo simetrični bodisi nesimetrični naključni sprehoed v prostoru $\mathbb{Z}^d$, kjer je $d \geq 3$, minljiva. 
@@ -1310,7 +1355,6 @@ Najprej jih definirajmo oz poglejmo kako izgledajo:
 </center>
 Pogledali si bomo čas vrnitve in čas pokritja. 
 ```{r, echo=FALSE}
-set.seed(77)
 generator_sosedov <- function(stevilo_tock){
   n <- stevilo_tock/2
   tocke <- seq(1:stevilo_tock)
@@ -1569,6 +1613,8 @@ df10 %>%
   kable_styling()
 ```
 
+Če so stolpci poimenovani t_1,t_2, t_3 in t_4 kar pomeni t=1,t=2, t=3 in t=4, so v vrstice d=1, d=2, d=3 in d=4. Opazimo, da k številu korakov več prispeva "globina" kot pa dodatno vozlišče. 
+
 Poglejmo si še pričakovani čas pokritja. 
 ```{r, echo=FALSE}
 cas_pokritja_d_tree_t <- function(sosedi){
@@ -1619,3 +1665,5 @@ df11 %>%
   kbl() %>%
   kable_styling()
 ```
+
+Legenda seznama je tukaj enaka kot zgoraj, le da prestavlja število korakov, ki so potrebni za pokritje vseh vozlišč. Pričakovano je, da največ korakov potrebujemo za večji $d$ in večji $t$. 
