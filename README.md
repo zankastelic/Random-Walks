@@ -1,4 +1,5 @@
 # Ne priporočam poganjanje kode, saj zaradi simulacij malo traja 
+Končno delo (koda in poročilo je napisano v R Markdownu) se nahaja v mapi Poročilo. Ime datoteke: random_walks.html
 # Random-Walks
 Repozitorij je namenjen projektni nalogi pri predmetu Matematika z računalnikom
 ## Opis
