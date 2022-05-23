@@ -1,3 +1,4 @@
+# Ne priporočam poganjanje kode, saj zaradi simulacij malo traja 
 # Random-Walks
 Repozitorij je namenjen projektni nalogi pri predmetu Matematika z računalnikom
 ## Opis
